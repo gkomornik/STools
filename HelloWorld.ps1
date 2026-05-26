@@ -1,7 +1,7 @@
 Write-Host "Hello World!!"
-"Date`t`t: {0}" -f (Get-Date)
-"Computer name`t: {0}" -f (hostname)
-"User name`t: {0}" -f (Get-CimInstance -ClassName Win32_ComputerSystem).UserName
+"Date`t`t`t: {0}" -f (Get-Date)
+"Computer name`t`t: {0}" -f (hostname)
+"User name`t`t: {0}" -f (Get-CimInstance -ClassName Win32_ComputerSystem).UserName
 "Operating System`t: {0}" -f (Get-CimInstance -ClassName Win32_OperatingSystem).Caption
-"Model`t`t: {0}" -f (Get-CimInstance -ClassName Win32_ComputerSystem).Model
+"Model`t`t`t: {0}" -f (Get-CimInstance -ClassName Win32_ComputerSystem).Model
 "IP Address`t`t: {0}" -f (Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4).IPAddress
