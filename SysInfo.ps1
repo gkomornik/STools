@@ -1,4 +1,3 @@
-Write-Host "==================" -ForegroundColor Yellow
 Write-Host "System information" -ForegroundColor Yellow
 Write-Host "==================" -ForegroundColor Yellow
 "Date`t`t`t: {0}" -f (Get-Date)
