@@ -1,4 +1,6 @@
+Write-Host "=================="
 Write-Host "System information"
+Write-Host "=================="
 "Date`t`t`t: {0}" -f (Get-Date)
 "Computer name`t`t: {0}" -f (hostname)
 "User name`t`t: {0}" -f (Get-CimInstance -ClassName Win32_ComputerSystem).UserName
