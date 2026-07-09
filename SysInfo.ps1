@@ -1,6 +1,6 @@
-Write-Host "=================="
-Write-Host "System information"
-Write-Host "=================="
+Write-Host "==================" -ForegroundColor Yellow
+Write-Host "System information" -ForegroundColor Yellow
+Write-Host "==================" -ForegroundColor Yellow
 "Date`t`t`t: {0}" -f (Get-Date)
 "Computer name`t`t: {0}" -f (hostname)
 "User name`t`t: {0}" -f (Get-CimInstance -ClassName Win32_ComputerSystem).UserName
