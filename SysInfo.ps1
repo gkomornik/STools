@@ -5,6 +5,7 @@ Write-Host "==================" -ForegroundColor Yellow
 "Computer name`t`t: {0}" -f (hostname)
 #"User name`t`t: {0}" -f (Get-CimInstance -ClassName Win32_ComputerSystem).UserName
 "User name`t`t: {0}" -f (whoami)
+#"User name`t`t: " -f (whoami) | Write-Host -ForegroundColor Green -NoNewline;"{0}" -f (whoami) | Write-Host
 "Operating System`t: {0} {1} ({2})" -f (Get-CimInstance -ClassName Win32_OperatingSystem).Caption,(Get-CimInstance -ClassName Win32_OperatingSystem).OSArchitecture,(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").DisplayVersion
 "Last bootup time`t: {0}{1}, {2:dd} {2:MMMM} {2:yyy} {2:hh}:{2:mm}:{2:ss} ({3}d {4})" -f (Get-CimInstance -ClassName win32_operatingSystem).LastBootUpTime.ToString("dddd").ToUpper()[0],(Get-CimInstance -ClassName win32_operatingSystem).LastBootUpTime.ToString("dddd").Substring(1),(Get-CimInstance -ClassName win32_operatingSystem).LastBootUpTime,((Get-Date)-(Get-CimInstance -ClassName win32_operatingSystem).LastBootUpTime).ToString().Split(".")[0],((Get-Date)-(Get-CimInstance -ClassName win32_operatingSystem).LastBootUpTime).ToString().Split(".")[1]
 "Model`t`t`t: {0}" -f (Get-CimInstance -ClassName Win32_ComputerSystem).Model
