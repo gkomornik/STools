@@ -1,5 +1,5 @@
 Write-Host "========================================================================================" -ForegroundColor Yellow
-Write-Host "                               System information summary                               " -ForegroundColor Yellow
+Write-Host "                               SYSTEM INFORMATION SUMMARY                               " -ForegroundColor Yellow
 Write-Host "========================================================================================" -ForegroundColor Yellow
 #"Date`t`t`t: {0}" -f (Get-Date -Format 'dddd').ToUpper()[0]+(Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss').Substring(1)
 "{0,-9}: {1}" -f "Date",(Get-Date -Format 'dddd').ToUpper()[0]+(Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss').Substring(1)
@@ -66,7 +66,7 @@ $totalRam = [Math]::Round($mem.TotalVisibleMemorySize / 1MB, 2)
 $freeRam = [Math]::Round($mem.FreePhysicalMemory / 1MB, 2)
 $usedRam = $totalRam - $freeRam
 #"Memory`t`t`t: {0:N2} GB used of {1:N2} GB" -f ([Math]::Round((Get-CimInstance Win32_OperatingSystem).TotalVisibleMemorySize / 1MB, 2)-[Math]::Round((Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory / 1MB, 2)),([Math]::Round((Get-CimInstance Win32_OperatingSystem).TotalVisibleMemorySize / 1MB, 2))
-"  {0,-20}: {1:N2} GB used of {2:N2} GB" -f "RAM",$usedRam,$totalRam
+"  {0,-20}: {1:N2} GB used of {2:N2} GB" -f "Ram",$usedRam,$totalRam
 $pageFile = Get-CimInstance Win32_PageFileUsage
 $pfTotal = if($pageFile) { ($pageFile | Measure-Object -Property AllocatedBaseSize -Sum).Sum } else { 0 }
 $pfUsed = if($pageFile) { ($pageFile | Measure-Object -Property CurrentUsage -Sum).Sum } else { 0 }
@@ -88,7 +88,7 @@ Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3}
 Write-Host "IP ADDRESS:" -ForegroundColor Cyan
 $ip_address=(Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4).IPAddress
 foreach ($ip in $ip_address) {
-    "  {0,-20}: {1}" -f "IPV4",$ip
+    "  {0,-20}: {1}" -f "IPv4",$ip
 }
 
 #"IP Address`t`t: {0}" -f (Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4).IPAddress
