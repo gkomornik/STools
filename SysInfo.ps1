@@ -18,7 +18,7 @@ switch ((Get-CimInstance -ClassName Win32_SystemEnclosure).ChassisTypes) {
     8 { $chassisType='Portable'}
     9 { $chassisType='Laptop'}
     10 { $chassisType='Notebook'}
-    13 { $chassisType='All in Oon'}
+    13 { $chassisType='All in One'}
     14 { $chassisType='Sub Notebook'}
     30 { $chassisType='Tablet'}
     Default { $chassisType='none' }
