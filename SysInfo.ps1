@@ -67,7 +67,7 @@ $usedRam = $totalRam - $freeRam
 $pageFile = Get-CimInstance Win32_PageFileUsage
 $pfTotal = if($pageFile) { ($pageFile | Measure-Object -Property AllocatedBaseSize -Sum).Sum } else { 0 }
 $pfUsed = if($pageFile) { ($pageFile | Measure-Object -Property CurrentUsage -Sum).Sum } else { 0 }
-"  {0,-20}: {1:N2} MB used of {2:N2} MB" -f "Swap file",$pfUsed,$pfTotal
+"  {0,-20}: {1} MB used of {2} MB" -f "Swap file",$pfUsed,$pfTotal
 ""
 
 # disc info
@@ -90,5 +90,4 @@ foreach ($ip in $ip_address) {
 
 #"IP Address`t`t: {0}" -f (Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4).IPAddress
 #"  {0,-20}: {1}" -f "IPV4",$ip_address
-
 ""
