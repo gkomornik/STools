@@ -31,22 +31,26 @@ switch ((Get-CimInstance -ClassName Win32_SystemEnclosure).ChassisTypes) {
 Write-Host "OPERATING SYSTEM:" -ForegroundColor Cyan
 #"User name`t`t: {0}" -f (whoami)
 #"User name`t`t: " -f (whoami) | Write-Host -ForegroundColor Green -NoNewline;"{0}" -f (whoami) | Write-Host
-"  {0,-20}: {1} {2} ({3})" -f "Name",(Get-CimInstance -ClassName Win32_OperatingSystem).Caption,(Get-CimInstance -ClassName Win32_OperatingSystem).OSArchitecture,(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").DisplayVersion
+$os=(Get-CimInstance -ClassName Win32_OperatingSystem)
+"  {0,-20}: {1} {2} ({3})" -f "Name",$os.Caption,$os.OSArchitecture,(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").DisplayVersion
 #"Operating System`t: {0} {1} ({2})" -f (Get-CimInstance -ClassName Win32_OperatingSystem).Caption,(Get-CimInstance -ClassName Win32_OperatingSystem).OSArchitecture,(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").DisplayVersion
-"  {0,-20}: {1}{2}, {3:dd} {3:MMMM} {3:yyy} {3:hh}:{3:mm}:{3:ss} ({4}d {5})" -f "Last bootup time",(Get-CimInstance -ClassName win32_operatingSystem).LastBootUpTime.ToString("dddd").ToUpper()[0],(Get-CimInstance -ClassName win32_operatingSystem).LastBootUpTime.ToString("dddd").Substring(1),(Get-CimInstance -ClassName win32_operatingSystem).LastBootUpTime,((Get-Date)-(Get-CimInstance -ClassName win32_operatingSystem).LastBootUpTime).ToString().Split(".")[0],((Get-Date)-(Get-CimInstance -ClassName win32_operatingSystem).LastBootUpTime).ToString().Split(".")[1]
-"  {0,-20}: {1}{2}, {3:dd} {3:MMMM} {3:yyy} {3:hh}:{3:mm}:{3:ss} ({4}d {5})" -f "Installation date",(Get-CimInstance -ClassName win32_operatingSystem).InstallDate.ToString("dddd").ToUpper()[0],(Get-CimInstance -ClassName win32_operatingSystem).InstallDate.ToString("dddd").Substring(1),(Get-CimInstance -ClassName win32_operatingSystem).InstallDate,((Get-Date)-(Get-CimInstance -ClassName win32_operatingSystem).InstallDate).ToString().Split(".")[0],((Get-Date)-(Get-CimInstance -ClassName win32_operatingSystem).InstallDate).ToString().Split(".")[1]
+"  {0,-20}: {1}{2}, {3:dd} {3:MMMM} {3:yyy} {3:hh}:{3:mm}:{3:ss} ({4}d {5})" -f "Last bootup time",$os.LastBootUpTime.ToString("dddd").ToUpper()[0],$os.LastBootUpTime.ToString("dddd").Substring(1),$os.LastBootUpTime,((Get-Date)-$os.LastBootUpTime).ToString().Split(".")[0],((Get-Date)-$os.LastBootUpTime).ToString().Split(".")[1]
+"  {0,-20}: {1}{2}, {3:dd} {3:MMMM} {3:yyy} {3:hh}:{3:mm}:{3:ss} ({4}d {5})" -f "Installation date",$os.InstallDate.ToString("dddd").ToUpper()[0],$os.InstallDate.ToString("dddd").Substring(1),$os.InstallDate,((Get-Date)-$os.InstallDate).ToString().Split(".")[0],((Get-Date)-$os.InstallDate).ToString().Split(".")[1]
 ""
 
 # processor info
 Write-Host "PROCESSOR:" -ForegroundColor Cyan
+$processor=Get-CimInstance -ClassName Win32_Processor
 #"Processor`t`t: {0} ({1} Cores)" -f ((Get-CimInstance -ClassName Win32_Processor).Name),(Get-CimInstance -ClassName Win32_Processor).NumberOfLogicalProcessors
-"  {0,-20}: {1} ({2} Cores)" -f "Model",((Get-CimInstance -ClassName Win32_Processor).Name),(Get-CimInstance -ClassName Win32_Processor).NumberOfLogicalProcessors
+"  {0,-20}: {1} ({2} Cores)" -f "Model",$processor.Name,$processor.NumberOfLogicalProcessors
 ""
 
 # video card info
+# vram not working
 Write-Host "VIDEO CARD:" -ForegroundColor Cyan
 Get-CimInstance -ClassName Win32_VideoController | ForEach-Object {
-    "  {0,-20}: {1,-40} VRAM: {2} GB" -f "Model",$_.Name,[Math]::Round( ($_.AdapterRAM / 1GB), 2)
+    #"  {0,-20}: {1,-40} VRAM: {2} GB" -f "Model",$_.Name,[Math]::Round( ($_.AdapterRAM / 1GB), 2)
+    "  {0,-20}: {1}" -f "Model",$_.Name
 }
 #"Graphic card`t`t: {0} | VRAM: {1} GB" -f (Get-CimInstance Win32_VideoController).Name,([Math]::Round((Get-CimInstance Win32_VideoController).AdapterRam / 1GB, 2))
 #"Graphic card`t`t: {0}" -f (Get-CimInstance Win32_VideoController).Name
@@ -80,7 +84,6 @@ Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3}
 # ip info
 Write-Host "IP ADDRESS:" -ForegroundColor Cyan
 $ip_address=(Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4).IPAddress
-
 foreach ($ip in $ip_address) {
     "  {0,-20}: {1}" -f "IPV4",$ip
 }
