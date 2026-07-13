@@ -32,7 +32,10 @@ Write-Host "OPERATING SYSTEM:" -ForegroundColor Cyan
 #"User name`t`t: {0}" -f (whoami)
 #"User name`t`t: " -f (whoami) | Write-Host -ForegroundColor Green -NoNewline;"{0}" -f (whoami) | Write-Host
 $os = Get-CimInstance -ClassName Win32_OperatingSystem
-"  {0,-20}: {1} {2} ({3})" -f "Name",$os.Caption,$os.OSArchitecture,(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").DisplayVersion
+$os_version = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
+"  {0,-20}: {1} {2} ({3})" -f "Name",$os.Caption,$os.OSArchitecture,$os_version.DisplayVersion
+"  {0,-20}: {1}.{2}" -f "Version",$os_version.CurrentBuildNumber,$os_version.UBR
+
 #"Operating System`t: {0} {1} ({2})" -f (Get-CimInstance -ClassName Win32_OperatingSystem).Caption,(Get-CimInstance -ClassName Win32_OperatingSystem).OSArchitecture,(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").DisplayVersion
 "  {0,-20}: {1}{2}, {3:dd} {3:MMMM} {3:yyy} {3:hh}:{3:mm}:{3:ss} ({4}d {5})" -f "Last bootup time",$os.LastBootUpTime.ToString("dddd").ToUpper()[0],$os.LastBootUpTime.ToString("dddd").Substring(1),$os.LastBootUpTime,((Get-Date)-$os.LastBootUpTime).ToString().Split(".")[0],((Get-Date)-$os.LastBootUpTime).ToString().Split(".")[1]
 "  {0,-20}: {1}{2}, {3:dd} {3:MMMM} {3:yyy} {3:hh}:{3:mm}:{3:ss} ({4}d {5})" -f "Installation date",$os.InstallDate.ToString("dddd").ToUpper()[0],$os.InstallDate.ToString("dddd").Substring(1),$os.InstallDate,((Get-Date)-$os.InstallDate).ToString().Split(".")[0],((Get-Date)-$os.InstallDate).ToString().Split(".")[1]
@@ -74,7 +77,7 @@ $pfUsed = if($pageFile) { ($pageFile | Measure-Object -Property CurrentUsage -Su
 Write-Host "DISC:" -ForegroundColor Cyan
 #$sysDrive = (Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").DeviceID
 Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3} | ForEach-Object {
-    if ($_.DeviceID -eq $Env:SystemDrive) { $sysDrive = "*SYS" } else {$sysDrive = "" }
+    if ($_.DeviceID -eq $Env:SystemDrive) { $sysDrive = "[SYS]" } else {$sysDrive = "" }
     "  {0,-20}: Size: {1,8:N2} GB   Free space: {2,8:N2} GB ({3} %) {4}" -f ($_.VolumeName+" ("+$_.DeviceID+")"),($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive
 }
 #"System drive`t`t: {0} Size: {1:N2} GB | Free space: {2:N2} GB ({3} %)" -f (Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").DeviceID,((Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").Size / 1GB),((Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").FreeSpace / 1GB),[Math]::Round((((Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").FreeSpace) / ((Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").Size)) * 100, 1)
