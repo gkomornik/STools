@@ -41,6 +41,7 @@ $os = Get-CimInstance -ClassName Win32_OperatingSystem
 $os_version = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
 "  {0,-16}: {1} {2} ({3})" -f "Name",$os.Caption,$os.OSArchitecture,$os_version.DisplayVersion
 "  {0,-16}: {1}.{2}" -f "Version",$os_version.CurrentBuildNumber,$os_version.UBR
+"  {0,-16}: {1}" -f "ProductId",$os_version.ProductId
 
 #"Operating System`t: {0} {1} ({2})" -f (Get-CimInstance -ClassName Win32_OperatingSystem).Caption,(Get-CimInstance -ClassName Win32_OperatingSystem).OSArchitecture,(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").DisplayVersion
 "  {0,-16}: {1}{2}, {3:dd} {3:MMMM} {3:yyy} {3:HH}:{3:mm}:{3:ss} ({4}d {5})" -f "Bootup time",$os.LastBootUpTime.ToString("dddd").ToUpper()[0],$os.LastBootUpTime.ToString("dddd").Substring(1),$os.LastBootUpTime,((Get-Date)-$os.LastBootUpTime).ToString().Split(".")[0],((Get-Date)-$os.LastBootUpTime).ToString().Split(".")[1]
