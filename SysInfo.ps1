@@ -18,6 +18,7 @@ if ((0 -ne (Get-CimInstance -ClassName Win32_OperatingSystem).Description.Length
 }
 "  {0,-16}: {1}" -f "Model",(Get-CimInstance -ClassName Win32_ComputerSystem).Model
 "  {0,-16}: {1}" -f "Manufacturer",(Get-CimInstance -ClassName Win32_ComputerSystem).Manufacturer
+"  {0,-16}: {1}" -f "MachineId",(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\SQMClient").MachineId.ToString().Replace('{','').Replace('}','')
 "  {0,-16}: {1}" -f "Domain",(Get-CimInstance -ClassName Win32_ComputerSystem).Domain
 
 $chassisType = ""
