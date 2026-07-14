@@ -1,9 +1,17 @@
+#############################################################################################################################
+#                                                                                                                           #
+#        System information summary                                                                                         #
+#                                                                                                                           #
+#        Copyright © 2026 by Grzegorz Komornik. All Rights Reserved.                                                        #
+#                                                                                                                           #
+#############################################################################################################################
+
 Write-Host "========================================================================================" -ForegroundColor Yellow
 Write-Host "                               SYSTEM INFORMATION SUMMARY                               " -ForegroundColor Yellow
 Write-Host "========================================================================================" -ForegroundColor Yellow
 #"Date`t`t`t: {0}" -f (Get-Date -Format 'dddd').ToUpper()[0]+(Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss').Substring(1)
 "{0,-9}: {1}" -f "Date",(Get-Date -Format 'dddd').ToUpper()[0]+(Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss').Substring(1)
-"{0,-9}: {1}" -f "Computer",(hostname)
+#"{0,-9}: {1}" -f "Computer",(hostname)
 "{0,-9}: {1}" -f "User name",(Get-CimInstance -ClassName Win32_ComputerSystem).UserName
 Write-Host "----------------------------------------------------------------------------------------"
 ""
@@ -96,7 +104,7 @@ $pfUsed = if($pageFile) { ($pageFile | Measure-Object -Property CurrentUsage -Su
 ""
 
 # disc info
-Write-Host "DISC:" -ForegroundColor Cyan
+Write-Host "LOGICAL DISC:" -ForegroundColor Cyan
 #$sysDrive = (Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").DeviceID
 Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3} | ForEach-Object {
     if ($_.DeviceID -eq $Env:SystemDrive) { $sysDrive = "[SYS]" } else {$sysDrive = "" }
