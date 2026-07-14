@@ -13,6 +13,7 @@ $isAdmin=([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 # computer info
 Write-Host "COMPUTER:" -ForegroundColor Cyan
 "  {0,-16}: {1}" -f "Name",([System.Environment]::MachineName)
+"  {0,-16}: {1}" -f "Description",(Get-CimInstance -ClassName Win32_OperatingSystem).Description
 "  {0,-16}: {1}" -f "Model",(Get-CimInstance -ClassName Win32_ComputerSystem).Model
 "  {0,-16}: {1}" -f "Manufacturer",(Get-CimInstance -ClassName Win32_ComputerSystem).Manufacturer
 "  {0,-16}: {1}" -f "Domain",(Get-CimInstance -ClassName Win32_ComputerSystem).Domain
