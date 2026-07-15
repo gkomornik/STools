@@ -90,7 +90,7 @@ ForEach-Object {
 Write-Host "VIDEO CARD:" -ForegroundColor Cyan
 Get-CimInstance -ClassName Win32_VideoController | ForEach-Object {
     #"  {0,-20}: {1,-40} VRAM: {2} GB" -f "Model",$_.Name,[Math]::Round( ($_.AdapterRAM / 1GB), 2)
-    "  {0,-16}: {1}" -f "Model",$_.Name
+    "  {0,-16}: {1}" -f "Name",$_.Name
 }
 #"Graphic card`t`t: {0} | VRAM: {1} GB" -f (Get-CimInstance Win32_VideoController).Name,([Math]::Round((Get-CimInstance Win32_VideoController).AdapterRam / 1GB, 2))
 #"Graphic card`t`t: {0}" -f (Get-CimInstance Win32_VideoController).Name
