@@ -10,24 +10,30 @@ Write-Host "====================================================================
 Write-Host "                               SYSTEM INFORMATION SUMMARY                               " -ForegroundColor Yellow
 Write-Host "========================================================================================" -ForegroundColor Yellow
 #"Date`t`t`t: {0}" -f (Get-Date -Format 'dddd').ToUpper()[0]+(Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss').Substring(1)
-"{0,-9}: {1}" -f "Date",(Get-Date -Format 'dddd').ToUpper()[0]+(Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss').Substring(1)
+
+#"{0,-9}: {1}" -f "Date",(Get-Date -Format 'dddd').ToUpper()[0]+(Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss').Substring(1)
+"  {0}: {1}" -f "Date",(Get-Date -Format 'dddd').ToUpper()[0]+(Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss').Substring(1)
+
 #"{0,-9}: {1}" -f "Computer",(hostname)
-"{0,-9}: {1}" -f "User name",(Get-CimInstance -ClassName Win32_ComputerSystem).UserName
+#"{0,-9}: {1}" -f "User name",(Get-CimInstance -ClassName Win32_ComputerSystem).UserName
 Write-Host "----------------------------------------------------------------------------------------"
 ""
 
 $isAdmin=([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
+$os = Get-CimInstance -ClassName Win32_OperatingSystem
+$cs = Get-CimInstance -ClassName Win32_ComputerSystem
+
 # computer info
 Write-Host "COMPUTER:" -ForegroundColor Cyan
 "  {0,-16}: {1}" -f "Name",([System.Environment]::MachineName)
-if ((0 -ne (Get-CimInstance -ClassName Win32_OperatingSystem).Description.Length)) {
-    "  {0,-16}: {1}" -f "Description",(Get-CimInstance -ClassName Win32_OperatingSystem).Description
+if ((0 -ne $os.Description.Length)) {
+    "  {0,-16}: {1}" -f "Description",$os.Description
 }
-"  {0,-16}: {1}" -f "Model",(Get-CimInstance -ClassName Win32_ComputerSystem).Model
-"  {0,-16}: {1}" -f "Manufacturer",(Get-CimInstance -ClassName Win32_ComputerSystem).Manufacturer
+"  {0,-16}: {1}" -f "Model",$cs.Model
+"  {0,-16}: {1}" -f "Manufacturer",$cs.Manufacturer
 "  {0,-16}: {1}" -f "MachineId",(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\SQMClient").MachineId.ToString().Replace('{','').Replace('}','')
-"  {0,-16}: {1}" -f "Domain",(Get-CimInstance -ClassName Win32_ComputerSystem).Domain
+"  {0,-16}: {1}" -f "Domain",$cs.Domain
 
 $chassisType = ""
 switch ((Get-CimInstance -ClassName Win32_SystemEnclosure).ChassisTypes) {
@@ -48,7 +54,6 @@ switch ((Get-CimInstance -ClassName Win32_SystemEnclosure).ChassisTypes) {
 Write-Host "OPERATING SYSTEM:" -ForegroundColor Cyan
 #"User name`t`t: {0}" -f (whoami)
 #"User name`t`t: " -f (whoami) | Write-Host -ForegroundColor Green -NoNewline;"{0}" -f (whoami) | Write-Host
-$os = Get-CimInstance -ClassName Win32_OperatingSystem
 $os_version = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
 "  {0,-16}: {1} {2} ({3})" -f "Name",$os.Caption,$os.OSArchitecture,$os_version.DisplayVersion
 "  {0,-16}: {1}.{2}" -f "Version",$os_version.CurrentBuildNumber,$os_version.UBR
@@ -62,9 +67,10 @@ $os_version = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\Curren
 
 # processor info
 Write-Host "PROCESSOR:" -ForegroundColor Cyan
-$processor = Get-CimInstance -ClassName Win32_Processor
+Get-CimInstance -ClassName Win32_Processor | ForEach-Object {
+    "  {0,-16}: {1} ({2} Cores)" -f "Name",$_.Name,$_.NumberOfLogicalProcessors
+}
 #"Processor`t`t: {0} ({1} Cores)" -f ((Get-CimInstance -ClassName Win32_Processor).Name),(Get-CimInstance -ClassName Win32_Processor).NumberOfLogicalProcessors
-"  {0,-16}: {1} ({2} Cores)" -f "Model",$processor.Name,$processor.NumberOfLogicalProcessors
 ""
 
 # video card info
@@ -108,7 +114,7 @@ $pfUsed = if($pageFile) { ($pageFile | Measure-Object -Property CurrentUsage -Su
 Write-Host "LOGICAL DISC:" -ForegroundColor Cyan
 #$sysDrive = (Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").DeviceID
 Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3} | ForEach-Object {
-    if ($_.DeviceID -eq $Env:SystemDrive) { $sysDrive = "[SYS]" } else {$sysDrive = "" }
+    if ($_.DeviceID -eq $Env:SystemDrive) { $sysDrive = "[SYS]" } else { $sysDrive = "" }
     #"  {0,-20}: Size: {1,8:N2} GB   Free space: {2,8:N2} GB ({3} %) {4}" -f ($_.VolumeName+" ("+$_.DeviceID+")"),($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive
     if ($isAdmin) {
         "  {0,-16}: Size: {1,8:N2} GB   Free space: {2,8:N2} GB ({3} %) {4,5} BitLocker Status: {5}" -f ($_.VolumeName+" ("+$_.DeviceID+")"),($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive,((Get-BitLockerVolume -MountPoint $_.DeviceID).protectionStatus)
