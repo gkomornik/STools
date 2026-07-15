@@ -10,9 +10,10 @@ Write-Host "====================================================================
 Write-Host "                               SYSTEM INFORMATION SUMMARY                               " -ForegroundColor Yellow
 Write-Host "========================================================================================" -ForegroundColor Yellow
 #"Date`t`t`t: {0}" -f (Get-Date -Format 'dddd').ToUpper()[0]+(Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss').Substring(1)
-
 #"{0,-9}: {1}" -f "Date",(Get-Date -Format 'dddd').ToUpper()[0]+(Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss').Substring(1)
 "  {0,-10}: {1}" -f "Date",(Get-Date -Format 'dddd').ToUpper()[0]+(Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss').Substring(1)
+#"  {0,-10}: {1}" -f "Date",(Get-Culture).TextInfo.ToTitleCase((Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss'))
+#(Get-Culture).TextInfo.ToTitleCase("tekst")
 
 #"{0,-9}: {1}" -f "Computer",(hostname)
 "  {0,-10}: {1}" -f "User name",(Get-CimInstance -ClassName Win32_ComputerSystem).UserName
@@ -32,7 +33,8 @@ if ((0 -ne $os.Description.Length)) {
 }
 "  {0,-16}: {1}" -f "Model",$cs.Model
 "  {0,-16}: {1}" -f "Manufacturer",$cs.Manufacturer
-"  {0,-16}: {1}" -f "MachineId",(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\SQMClient").MachineId.ToString().Replace('{','').Replace('}','')
+#"  {0,-16}: {1}" -f "MachineId",(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\SQMClient").MachineId.ToString().Replace('{','').Replace('}','')
+"  {0,-16}: {1}" -f "MachineId",(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\SQMClient").MachineId.ToString().Trim('{','}')
 "  {0,-16}: {1}" -f "Domain",$cs.Domain
 
 $chassisType = ""
