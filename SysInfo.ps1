@@ -110,6 +110,16 @@ $pfUsed = if($pageFile) { ($pageFile | Measure-Object -Property CurrentUsage -Su
 "  {0,-16}: {1} MB used of {2} MB" -f "Swap file",$pfUsed,$pfTotal
 ""
 
+# disk drive
+Write-Host "DISK DRIVE:" -ForegroundColor Cyan
+#Get-CimInstance -ClassName Win32_DiskDrive | Format-Table @{Label="Disk Drive";Expression={$_.Caption}},@{Label="Size";Expression={$_.Size / 1gb}}
+Get-CimInstance -ClassName Win32_DiskDrive | ForEach-Object {
+    "  {0,-16}: {1,-30} Size: {2,4:N2} GB" -f "Name",$_.Caption,($_.Size / 1GB)
+}
+""
+#Format-Table @{Label="Disk Drive";Expression={$_.Caption}},@{Label="Size";Expression={$_.Size / 1gb}}
+
+
 # logical disc info
 Write-Host "LOGICAL DISC:" -ForegroundColor Cyan
 #$sysDrive = (Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").DeviceID
