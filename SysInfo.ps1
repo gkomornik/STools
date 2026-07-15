@@ -59,9 +59,12 @@ $os_version = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\Curren
 "  {0,-16}: {1}.{2}" -f "Version",$os_version.CurrentBuildNumber,$os_version.UBR
 "  {0,-16}: {1}" -f "ProductId",$os_version.ProductId
 
+
+$timespan_bootup = (Get-Date)-$os.LastBootUpTime
+$timespan_installdate = (Get-Date)-$os.InstallDate
 #"Operating System`t: {0} {1} ({2})" -f (Get-CimInstance -ClassName Win32_OperatingSystem).Caption,(Get-CimInstance -ClassName Win32_OperatingSystem).OSArchitecture,(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").DisplayVersion
-"  {0,-16}: {1}{2}, {3:dd} {3:MMMM} {3:yyy} {3:HH}:{3:mm}:{3:ss} ({4}d {5})" -f "Bootup time",$os.LastBootUpTime.ToString("dddd").ToUpper()[0],$os.LastBootUpTime.ToString("dddd").Substring(1),$os.LastBootUpTime,((Get-Date)-$os.LastBootUpTime).ToString().Split(".")[0],((Get-Date)-$os.LastBootUpTime).ToString().Split(".")[1]
-"  {0,-16}: {1}{2}, {3:dd} {3:MMMM} {3:yyy} {3:HH}:{3:mm}:{3:ss} ({4}d {5})" -f "InstallDate",$os.InstallDate.ToString("dddd").ToUpper()[0],$os.InstallDate.ToString("dddd").Substring(1),$os.InstallDate,((Get-Date)-$os.InstallDate).ToString().Split(".")[0],((Get-Date)-$os.InstallDate).ToString().Split(".")[1]
+"  {0,-16}: {1}{2}, {3:dd} {3:MMMM} {3:yyy} {3:HH}:{3:mm}:{3:ss} ({4} d {5})" -f "Bootup time",$os.LastBootUpTime.ToString("dddd").ToUpper()[0],$os.LastBootUpTime.ToString("dddd").Substring(1),$os.LastBootUpTime,$timespan_bootup.Days,$timespan_bootup.ToString("hh\:mm\:ss")
+"  {0,-16}: {1}{2}, {3:dd} {3:MMMM} {3:yyy} {3:HH}:{3:mm}:{3:ss} ({4} d {5})" -f "InstallDate",$os.InstallDate.ToString("dddd").ToUpper()[0],$os.InstallDate.ToString("dddd").Substring(1),$os.InstallDate,$timespan_installdate.Days,$timespan_installdate.ToString("hh\:mm\:ss")
 "  {0,-16}: {1}" -f "TimeZone",(Get-CimInstance -ClassName Win32_TimeZone).Caption
 ""
 
