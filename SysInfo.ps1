@@ -177,7 +177,7 @@ foreach ($ip in $ip_address) {
 
 #"IP Address`t`t: {0}" -f (Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4).IPAddress
 #"  {0,-20}: {1}" -f "IPV4",$ip_address
-
+""
 Write-Host "----------------------------------------------------------------------------------------"
 "Execution time: {0}" -f ((Get-Date)-$t_start).ToString() | Write-Host -ForegroundColor DarkGray
 ""
