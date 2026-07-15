@@ -12,10 +12,10 @@ Write-Host "====================================================================
 #"Date`t`t`t: {0}" -f (Get-Date -Format 'dddd').ToUpper()[0]+(Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss').Substring(1)
 
 #"{0,-9}: {1}" -f "Date",(Get-Date -Format 'dddd').ToUpper()[0]+(Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss').Substring(1)
-"  {0}: {1}" -f "Date",(Get-Date -Format 'dddd').ToUpper()[0]+(Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss').Substring(1)
+"  {0,-10}: {1}" -f "Date",(Get-Date -Format 'dddd').ToUpper()[0]+(Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss').Substring(1)
 
 #"{0,-9}: {1}" -f "Computer",(hostname)
-#"{0,-9}: {1}" -f "User name",(Get-CimInstance -ClassName Win32_ComputerSystem).UserName
+"  {0,-10}: {1}" -f "User name",(Get-CimInstance -ClassName Win32_ComputerSystem).UserName
 Write-Host "----------------------------------------------------------------------------------------"
 ""
 
