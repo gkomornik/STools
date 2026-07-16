@@ -121,7 +121,9 @@ $pfUsed = if($pageFile) { ($pageFile | Measure-Object -Property CurrentUsage -Su
 Write-Host "DISK DRIVE:" -ForegroundColor Cyan
 #Get-CimInstance -ClassName Win32_DiskDrive | Format-Table @{Label="Disk Drive";Expression={$_.Caption}},@{Label="Size";Expression={$_.Size / 1gb}}
 Get-CimInstance -ClassName Win32_DiskDrive | ForEach-Object {
-    "  {0,-16}: {1,-30} Size: {2,7:N2} GB SN: {3}" -f "Name",$_.Caption,($_.Size / 1GB),$_.SerialNumber
+    #"  {0,-16}: {1,-30} Size: {2,7:N2} GB SN: {3}" -f "Name",$_.Caption,($_.Size / 1GB),$_.SerialNumber
+    "  {0,-16}: {1,-30} Size: {2,7:N2} GB" -f "Name",$_.Caption,($_.Size / 1GB)
+}
 }
 ""
 #Format-Table @{Label="Disk Drive";Expression={$_.Caption}},@{Label="Size";Expression={$_.Size / 1gb}}
