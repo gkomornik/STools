@@ -110,7 +110,7 @@ $totalRam = [Math]::Round($mem.TotalVisibleMemorySize / 1MB, 2)
 $freeRam = [Math]::Round($mem.FreePhysicalMemory / 1MB, 2)
 $usedRam = $totalRam - $freeRam
 #"Memory`t`t`t: {0:N2} GB used of {1:N2} GB" -f ([Math]::Round((Get-CimInstance Win32_OperatingSystem).TotalVisibleMemorySize / 1MB, 2)-[Math]::Round((Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory / 1MB, 2)),([Math]::Round((Get-CimInstance Win32_OperatingSystem).TotalVisibleMemorySize / 1MB, 2))
-"  {0,-16}: {1:N2} GB used of {2:N2} GB" -f "Ram",$usedRam,$totalRam
+"  {0,-16}: {1:N2} GB used of {2:N2} GB ({3} %)" -f "Ram",$usedRam,$totalRam,[Math]::Round((($usedRam/$totalRam)*100),1)
 $pageFile = Get-CimInstance Win32_PageFileUsage
 $pfTotal = if($pageFile) { ($pageFile | Measure-Object -Property AllocatedBaseSize -Sum).Sum } else { 0 }
 $pfUsed = if($pageFile) { ($pageFile | Measure-Object -Property CurrentUsage -Sum).Sum } else { 0 }
