@@ -5,7 +5,7 @@
 #        Copyright © 2026 by Grzegorz Komornik. All Rights Reserved.                                                   #
 #                                                                                                                      #
 ########################################################################################################################
-$Error.Clear()
+#$Error.Clear()
 $t_start = Get-Date
 
 Write-Host "========================================================================================" -ForegroundColor Yellow
@@ -62,8 +62,7 @@ $os_version = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\Curren
 "  {0,-16}: {1} {2} ({3})" -f "Name",$os.Caption,$os.OSArchitecture,$os_version.DisplayVersion
 "  {0,-16}: {1}.{2}" -f "Version",$os_version.CurrentBuildNumber,$os_version.UBR
 "  {0,-16}: {1}" -f "ProductId",$os_version.ProductId
-
-
+ 
 $timespan_bootup = (Get-Date)-$os.LastBootUpTime
 $timespan_installdate = (Get-Date)-$os.InstallDate
 #"Operating System`t: {0} {1} ({2})" -f (Get-CimInstance -ClassName Win32_OperatingSystem).Caption,(Get-CimInstance -ClassName Win32_OperatingSystem).OSArchitecture,(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").DisplayVersion
