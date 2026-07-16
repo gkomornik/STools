@@ -29,7 +29,7 @@ $cs = Get-CimInstance -ClassName Win32_ComputerSystem
 
 # computer info
 Write-Host "COMPUTER:" -ForegroundColor Cyan
-"  {0,-16}: {1}" -f "Name",([System.Environment]::MachineName)
+"  {0,-16}: {1}" -f "Name",(hostname) #([System.Environment]::MachineName)
 if ((0 -ne $os.Description.Length)) {
     "  {0,-16}: {1}" -f "Description",$os.Description
 }
