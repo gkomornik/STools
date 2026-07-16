@@ -72,7 +72,6 @@ $timespan_installdate = (Get-Date)-$os.InstallDate
 "  {0,-16}: {1}" -f "TimeZone",(Get-CimInstance -ClassName Win32_TimeZone).Caption
 ""
 
-
 # logged user
 Write-Host "LOGGED USER:" -ForegroundColor Cyan
 $LoggedOnUser = Get-CimInstance -ClassName Win32_LogonSession | 
@@ -89,7 +88,7 @@ $LoggedOnUser = Get-CimInstance -ClassName Win32_LogonSession |
             [PSCustomObject]@{
                 UserName      = $UserName
                 Domain        = $UserRelation.Antecedent.Domain
-                LogonType     = if ($Session.LogonType -eq 2) { "Lokalna (Konsola)" } else { "Zdalna (RDP)" }
+                LogonType     = if ($Session.LogonType -eq 2) { "Interactive" } else { "Remote (RDP)" }
                 StartTime     = $Session.StartTime
             }
         }
@@ -98,10 +97,9 @@ $LoggedOnUser = Get-CimInstance -ClassName Win32_LogonSession |
 $LoggedOnUser | Group-Object UserName, LogonType | ForEach-Object {
     $_.Group | Sort-Object StartTime | Select-Object -First 1
 } | Where-Object {!(($_.UserName -like "DWM-*") -or ($_.UserName -like "UMFD-*"))} | ForEach-Object {
-    "  {0,-16}: {1} StartTime: {2}" -f "Name",($_.Domain+"\"+$_.UserName),$_.StartTime
-}
+    "  {0,-16}: {1} Type: {2} Started: {3}" -f "Name",($_.Domain+"\"+$_.UserName),$_.LogonType,$_.StartTime
+    }
 ""
-
 
 # processor info
 Write-Host "PROCESSOR:" -ForegroundColor Cyan
