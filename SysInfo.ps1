@@ -97,7 +97,7 @@ $LoggedOnUser = Get-CimInstance -ClassName Win32_LogonSession |
 $LoggedOnUser | Group-Object UserName, LogonType | ForEach-Object {
     $_.Group | Sort-Object StartTime | Select-Object -First 1
 } | Where-Object {!(($_.UserName -like "DWM-*") -or ($_.UserName -like "UMFD-*"))} | ForEach-Object {
-    "  {0,-16}: {1} Type: {2} Started: {3}" -f "Name",($_.Domain+"\"+$_.UserName),$_.LogonType,$_.StartTime
+    "  {0,-16}: {1}  Type: {2}  Started: {3}" -f "Name",($_.Domain+"\"+$_.UserName),$_.LogonType,$_.StartTime
     }
 ""
 
