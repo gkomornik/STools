@@ -71,6 +71,26 @@ $timespan_installdate = (Get-Date)-$os.InstallDate
 "  {0,-16}: {1}" -f "TimeZone",(Get-CimInstance -ClassName Win32_TimeZone).Caption
 ""
 
+
+Write-Host "QUERY USER SESSION:" -ForegroundColor Cyan
+$Sessions = query user 2>&1 | ForEach-Object {
+    if ($_ -match '^(?<Active>>)?\s*(?<User>[^\s]+)\s+(?<Session>[^\s]*)\s+(?<ID>\d+)\s+(?<State>[^\s]+)\s+(?<IdleTime>[^\s]+)\s+(?<LogonTime>.+)$') {
+        [PSCustomObject]@{
+            User       = $Matches.User
+            ID         = $Matches.ID
+            State       = $Matches.State -replace 'Disc', 'Disconnected'
+            Session      = $Matches.Session
+            LogonTime  = $Matches.LogonTime.Trim()
+        }
+    }
+}
+#$Sessions | Format-Table
+
+$Sessions | ForEach-Object {
+    "  {0,-16}: ID: {1,2}  State: {2,-8}  Session: {3,-8}  LogonTime: {4}" -f $_.User,$_.ID,$_.State,$_.Session,$_.LogonTime
+}
+""
+
 # logged user
 Write-Host "LOGGED USER:" -ForegroundColor Cyan
 $LoggedOnUser = Get-CimInstance -ClassName Win32_LogonSession | 
@@ -99,6 +119,17 @@ $LoggedOnUser | Group-Object UserName, LogonType | ForEach-Object {
     "  {0,-16}: {1}  Type: {2}  Started: {3}" -f "Name",($_.Domain+"\"+$_.UserName),$_.LogonType,$_.StartTime
     }
 ""
+
+#Get-CimInstance -ClassName win32_process -Filter "Name like 'explorer.exe'" | % {"User name: {0}:   StartTime: {1}" -f ((Invoke-CimMethod $_ -MethodName GetOwner).Domain+"\"+(Invoke-CimMethod $_ -MethodName GetOwner).User),$_.CreationDate}
+<#
+$RemotingUsers = Get-CimInstance -ClassName Win32_Process -Filter "Name='wsmprovhost.exe'" -ComputerName $Computer | ForEach-Object {
+    $Owner = Invoke-CimMethod -InputObject $_ -MethodName GetOwner
+    [PSCustomObject]@{
+        Uzytkownik = $Owner.User
+        TypSesji   = "PowerShell Remoting (WinRM)"
+    }
+}
+#>
 
 # processor info
 Write-Host "PROCESSOR:" -ForegroundColor Cyan
