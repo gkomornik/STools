@@ -17,8 +17,10 @@ Write-Host "====================================================================
 #"  {0,-10}: {1}" -f "Date",(Get-Culture).TextInfo.ToTitleCase((Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss'))
 #(Get-Culture).TextInfo.ToTitleCase("tekst")
 
+"  {0,-10}: {1}" -f "Report ID",((New-Guid).Guid.ToUpper())
+
 #"{0,-9}: {1}" -f "Computer",(hostname)
-"  {0,-10}: {1}" -f "User name",(Get-CimInstance -ClassName Win32_ComputerSystem).UserName
+#"  {0,-10}: {1}" -f "User name",(Get-CimInstance -ClassName Win32_ComputerSystem).UserName
 Write-Host "----------------------------------------------------------------------------------------"
 ""
 
