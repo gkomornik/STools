@@ -60,7 +60,7 @@ Write-Host "OPERATING SYSTEM:" -ForegroundColor Cyan
 #"User name`t`t: " -f (whoami) | Write-Host -ForegroundColor Green -NoNewline;"{0}" -f (whoami) | Write-Host
 $os_version = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
 #"  {0,-16}: {1} {2} ({3})" -f "Name",$os.Caption,$os.OSArchitecture,$os_version.DisplayVersion
-if ($os_version.DisplayVersion -ne "") {
+if ($os_version.DisplayVersion -eq "") {
     "  {0,-16}: {1} {2} ({3})" -f "Name",$os.Caption,$os.OSArchitecture,$os_version.DisplayVersion
 } else {
     "  {0,-16}: {1} {2}" -f "Name",$os.Caption,$os.OSArchitecture
