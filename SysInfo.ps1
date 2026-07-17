@@ -200,13 +200,13 @@ Get-CimInstance -ClassName Win32_DiskDrive | ForEach-Object {
 #if (Get-Command Get-BitLockerVolume -ErrorAction SilentlyContinue) {$isBitLockerCMDSupport=$true} else {$isBitLockerCMDSupport=$false}
 if (Get-Command Get-BitLockerVolume -ErrorAction SilentlyContinue) {
     try {
+        $isBitLockerCMDSupport=$true
         Get-BitLockerVolume -MountPoint $env:SystemDrive -ErrorAction Stop | Out-Null
     }
     catch {
         <#Do this if a terminating exception happens#>
         $isBitLockerCMDSupport=$false
     }
-    $isBitLockerCMDSupport=$true
 } else {
     $isBitLockerCMDSupport=$false
 }
