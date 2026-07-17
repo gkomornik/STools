@@ -211,7 +211,7 @@ if (Get-Command Get-BitLockerVolume -ErrorAction SilentlyContinue) {
     $isBitLockerCMDSupport=$false
 }
 
-Write-Host $isBitLockerCMDSupport -ForegroundColor Green
+#Write-Host $isBitLockerCMDSupport -ForegroundColor Green
 
 # logical disc info
 Write-Host "LOGICAL DISC:" -ForegroundColor Cyan
