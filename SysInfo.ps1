@@ -258,11 +258,21 @@ if (!$isAdmin) {Write-Host "  * Run with elevated privileges to see information 
 # TO-DO: Add mac address
 # Get-NetAdapter -InterfaceIndex 24 | select Name,MacAddress
 # ip info
+
 Write-Host "IP ADDRESS:" -ForegroundColor Cyan
+<#
 $ip_address=(Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4).IPAddress
 foreach ($ip in $ip_address) {
     "  {0,-16}: {1}" -f "IPv4",$ip
 }
+#>
+
+(Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4) | ForEach-Object {
+    #$_
+    $netAdapter=Get-NetAdapter -InterfaceIndex $_.InterfaceIndex
+    "  {0,-16}: {1,-18} MAC: {2,-20} LinkSpeed: {3,-20}`n  {4,-16}  Name: {5,-16}" -f "IPv4",$_.IPAddress,$netAdapter.MacAddress,$netAdapter.LinkSpeed," ",$netAdapter.ifDesc #,$netAdapter.DriverDescription
+}
+
 
 #"IP Address`t`t: {0}" -f (Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4).IPAddress
 #"  {0,-20}: {1}" -f "IPV4",$ip_address
