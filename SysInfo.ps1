@@ -197,7 +197,22 @@ Get-CimInstance -ClassName Win32_DiskDrive | ForEach-Object {
 ""
 #Format-Table @{Label="Disk Drive";Expression={$_.Caption}},@{Label="Size";Expression={$_.Size / 1gb}}
 
-if (Get-Command Get-BitLockerVolume -ErrorAction SilentlyContinue) {$isBitLockerCMDSupport=$true} else {$isBitLockerCMDSupport=$false}
+#if (Get-Command Get-BitLockerVolume -ErrorAction SilentlyContinue) {$isBitLockerCMDSupport=$true} else {$isBitLockerCMDSupport=$false}
+if (Get-Command Get-BitLockerVolume -ErrorAction SilentlyContinue) {
+    try {
+        Get-BitLockerVolume -MountPoint $env:SystemDrive -ErrorAction Stop | Out-Null
+    }
+    catch {
+        <#Do this if a terminating exception happens#>
+        $isBitLockerCMDSupport=$false
+    }
+    $isBitLockerCMDSupport=$true
+} else {
+    $isBitLockerCMDSupport=$false
+}
+
+Write-Host $isBitLockerCMDSupport -ForegroundColor Green
+
 # logical disc info
 Write-Host "LOGICAL DISC:" -ForegroundColor Cyan
 #$sysDrive = (Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").DeviceID
