@@ -72,7 +72,7 @@ $timespan_installdate = (Get-Date)-$os.InstallDate
 ""
 
 
-Write-Host "QUERY USER SESSION:" -ForegroundColor Cyan
+Write-Host "QUERY USER:" -ForegroundColor Cyan
 $Sessions = query user 2>&1 | ForEach-Object {
     if ($_ -match '^(?<Active>>)?\s*(?<User>[^\s]+)\s+(?<Session>[^\s]*)\s+(?<ID>\d+)\s+(?<State>[^\s]+)\s+(?<IdleTime>[^\s]+)\s+(?<LogonTime>.+)$') {
         [PSCustomObject]@{
@@ -116,7 +116,7 @@ $LoggedOnUser = Get-CimInstance -ClassName Win32_LogonSession |
 $LoggedOnUser | Group-Object UserName, LogonType | ForEach-Object {
     $_.Group | Sort-Object StartTime | Select-Object -First 1
 } | Where-Object {!(($_.UserName -like "DWM-*") -or ($_.UserName -like "UMFD-*"))} | ForEach-Object {
-    "  {0,-16}: {1}  Type: {2}  Started: {3}" -f "Name",($_.Domain+"\"+$_.UserName),$_.LogonType,$_.StartTime
+    "  {0,-16}: {1,-23}  Type: {2,-10}  Started: {3}" -f "Name",($_.Domain+"\"+$_.UserName),$_.LogonType,$_.StartTime
     }
 ""
 
@@ -124,13 +124,18 @@ $LoggedOnUser | Group-Object UserName, LogonType | ForEach-Object {
 $RemotingUsers = Get-CimInstance -ClassName Win32_Process -Filter "Name='wsmprovhost.exe'" -ComputerName $Computer | ForEach-Object {
     $Owner = Invoke-CimMethod -InputObject $_ -MethodName GetOwner
     [PSCustomObject]@{
-        Uzytkownik = $Owner.User
-        TypSesji   = "PowerShell Remoting (WinRM)"
+        User       = $Owner.User
+        LogonType  = "PowerShell Remoting (WinRM)"
+        StartTime  = $_.CreationDate
     }
 }
-"Remote user : {0}" -f $RemotingUsers.count
+
 if ($RemotingUsers.Count -gt 0) {
-    $RemotingUsers | Format-Table
+    Write-Host "POWERSHELL WinRM:" -ForegroundColor Cyan
+    $RemotingUsers | ForEach-Object {
+        "  {0,-16}: StartTime: {1}" -f $_.User,$_.StartTime
+    }
+    ""
 }
 
 # processor info
