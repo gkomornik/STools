@@ -182,11 +182,11 @@ $totalRam = [Math]::Round($mem.TotalVisibleMemorySize / 1MB, 2)
 $freeRam = [Math]::Round($mem.FreePhysicalMemory / 1MB, 2)
 $usedRam = $totalRam - $freeRam
 #"Memory`t`t`t: {0:N2} GB used of {1:N2} GB" -f ([Math]::Round((Get-CimInstance Win32_OperatingSystem).TotalVisibleMemorySize / 1MB, 2)-[Math]::Round((Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory / 1MB, 2)),([Math]::Round((Get-CimInstance Win32_OperatingSystem).TotalVisibleMemorySize / 1MB, 2))
-"  {0,-16}: {1:N2} GB used of {2:N2} GB ({3} %)" -f "Ram",$usedRam,$totalRam,[Math]::Round((($usedRam/$totalRam)*100),1)
+"  {0,-16}: {1,5:N2} GB used of {2,5:N2} GB ({3} %)" -f "Ram",$usedRam,$totalRam,[Math]::Round((($usedRam/$totalRam)*100),1)
 $pageFile = Get-CimInstance Win32_PageFileUsage
 $pfTotal = if($pageFile) { ($pageFile | Measure-Object -Property AllocatedBaseSize -Sum).Sum } else { 0 }
 $pfUsed = if($pageFile) { ($pageFile | Measure-Object -Property CurrentUsage -Sum).Sum } else { 0 }
-"  {0,-16}: {1} MB used of {2} MB ({3} %)" -f "Swap file",$pfUsed,$pfTotal,[Math]::Round(($pfUsed/$pfTotal)*100,1)
+"  {0,-16}: {1,5} MB used of {2,5} MB ({3} %)" -f "Swap file",$pfUsed,$pfTotal,[Math]::Round(($pfUsed/$pfTotal)*100,1)
 ""
 
 # disk drive
@@ -270,7 +270,8 @@ foreach ($ip in $ip_address) {
 (Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4) | ForEach-Object {
     #$_
     $netAdapter=Get-NetAdapter -InterfaceIndex $_.InterfaceIndex
-    "  {0,-16}: {1,-18} MAC: {2,-20} LinkSpeed: {3,-20}`n  {4,-16}  ifDesc: {5,-16}" -f "IPv4",$_.IPAddress,$netAdapter.MacAddress,$netAdapter.LinkSpeed," ",$netAdapter.ifDesc #,$netAdapter.DriverDescription
+    #"  {0,-16}: {1,-18} MAC: {2,-20} LinkSpeed: {3,-20}`n  {4,-16}  ifDesc: {5,-16}" -f "IPv4",$_.IPAddress,$netAdapter.MacAddress,$netAdapter.LinkSpeed," ",$netAdapter.ifDesc #,$netAdapter.DriverDescription
+    "  {0,-16}: {1,-18} MAC: {2,-20} LinkSpeed: {3,-20}`n  {4,-16}  {5,-16}" -f "IPv4",$_.IPAddress,$netAdapter.MacAddress,$netAdapter.LinkSpeed," ",$netAdapter.ifDesc #,$netAdapter.DriverDescription
 }
 
 
