@@ -255,7 +255,8 @@ if (!$isAdmin) {Write-Host "  * Run with elevated privileges to see information 
 ""
 #>
 
-
+# TO-DO: Add mac address
+# Get-NetAdapter -InterfaceIndex 24 | select Name,MacAddress
 # ip info
 Write-Host "IP ADDRESS:" -ForegroundColor Cyan
 $ip_address=(Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4).IPAddress
