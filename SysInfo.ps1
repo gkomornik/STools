@@ -132,7 +132,7 @@ $RemotingUsers = Get-CimInstance -ClassName Win32_Process -Filter "Name='wsmprov
 if ($RemotingUsers) {
     Write-Host "POWERSHELL WinRM:" -ForegroundColor Cyan
     $RemotingUsers | ForEach-Object {
-        "  {0,-16}: Time: {1}" -f $_.User,$_.StartTime
+        "  {0,-16}: {1,-15} Time: {2}" -f "Name",$_.User,$_.StartTime
     }
     ""
 }
