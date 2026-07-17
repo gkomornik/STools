@@ -71,23 +71,22 @@ $timespan_installdate = (Get-Date)-$os.InstallDate
 "  {0,-16}: {1}" -f "TimeZone",(Get-CimInstance -ClassName Win32_TimeZone).Caption
 ""
 
-
+# query user sessions
 Write-Host "QUERY USER:" -ForegroundColor Cyan
 $Sessions = query user 2>&1 | ForEach-Object {
     if ($_ -match '^(?<Active>>)?\s*(?<User>[^\s]+)\s+(?<Session>[^\s]*)\s+(?<ID>\d+)\s+(?<State>[^\s]+)\s+(?<IdleTime>[^\s]+)\s+(?<LogonTime>.+)$') {
         [PSCustomObject]@{
             User       = $Matches.User
             ID         = $Matches.ID
-            State       = $Matches.State -replace 'Disc', 'Disconnected'
-            Session      = $Matches.Session
+            State      = $Matches.State -replace 'Disc', 'Disconnected'
+            Session    = $Matches.Session
             LogonTime  = $Matches.LogonTime.Trim()
         }
     }
 }
 #$Sessions | Format-Table
-
 $Sessions | ForEach-Object {
-    "  {0,-16}: ID: {1,2}  State: {2,-8}  Session: {3,-8}  LogonTime: {4}" -f $_.User,$_.ID,$_.State,$_.Session,$_.LogonTime
+    "  {0,-16}: ID: {1,2}  State: {2,-8}  Session: {3,-8}  Time: {4}" -f $_.User,$_.ID,$_.State,$_.Session,$_.LogonTime
 }
 ""
 
@@ -116,7 +115,7 @@ $LoggedOnUser = Get-CimInstance -ClassName Win32_LogonSession |
 $LoggedOnUser | Group-Object UserName, LogonType | ForEach-Object {
     $_.Group | Sort-Object StartTime | Select-Object -First 1
 } | Where-Object {!(($_.UserName -like "DWM-*") -or ($_.UserName -like "UMFD-*"))} | ForEach-Object {
-    "  {0,-16}: {1,-23}  Type: {2,-10}  Started: {3}" -f "Name",($_.Domain+"\"+$_.UserName),$_.LogonType,$_.StartTime
+    "  {0,-16}: {1,-23}  Type: {2,-10}  Time: {3}" -f "Name",($_.Domain+"\"+$_.UserName),$_.LogonType,$_.StartTime
     }
 ""
 
@@ -133,7 +132,7 @@ $RemotingUsers = Get-CimInstance -ClassName Win32_Process -Filter "Name='wsmprov
 if ($RemotingUsers.Count -gt 0) {
     Write-Host "POWERSHELL WinRM:" -ForegroundColor Cyan
     $RemotingUsers | ForEach-Object {
-        "  {0,-16}: StartTime: {1}" -f $_.User,$_.StartTime
+        "  {0,-16}: Time: {1}" -f $_.User,$_.StartTime
     }
     ""
 }
