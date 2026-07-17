@@ -121,7 +121,6 @@ $LoggedOnUser | Group-Object UserName, LogonType | ForEach-Object {
 ""
 
 #Get-CimInstance -ClassName win32_process -Filter "Name like 'explorer.exe'" | % {"User name: {0}:   StartTime: {1}" -f ((Invoke-CimMethod $_ -MethodName GetOwner).Domain+"\"+(Invoke-CimMethod $_ -MethodName GetOwner).User),$_.CreationDate}
-<#
 $RemotingUsers = Get-CimInstance -ClassName Win32_Process -Filter "Name='wsmprovhost.exe'" -ComputerName $Computer | ForEach-Object {
     $Owner = Invoke-CimMethod -InputObject $_ -MethodName GetOwner
     [PSCustomObject]@{
@@ -129,7 +128,7 @@ $RemotingUsers = Get-CimInstance -ClassName Win32_Process -Filter "Name='wsmprov
         TypSesji   = "PowerShell Remoting (WinRM)"
     }
 }
-#>
+"Remote user : {0}" -f $RemotingUsers.count
 
 # processor info
 Write-Host "PROCESSOR:" -ForegroundColor Cyan
