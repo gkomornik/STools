@@ -129,6 +129,9 @@ $RemotingUsers = Get-CimInstance -ClassName Win32_Process -Filter "Name='wsmprov
     }
 }
 "Remote user : {0}" -f $RemotingUsers.count
+if ($RemotingUsers.Count -gt 0) {
+    $RemotingUsers | Format-Table
+}
 
 # processor info
 Write-Host "PROCESSOR:" -ForegroundColor Cyan
