@@ -187,7 +187,8 @@ $usedRam = $totalRam - $freeRam
 $pageFile = Get-CimInstance Win32_PageFileUsage
 $pfTotal = if($pageFile) { ($pageFile | Measure-Object -Property AllocatedBaseSize -Sum).Sum } else { 0 }
 $pfUsed = if($pageFile) { ($pageFile | Measure-Object -Property CurrentUsage -Sum).Sum } else { 0 }
-"  {0,-16}: {1,5} MB used of {2,5} MB ({3} %)" -f "Swap file",$pfUsed,$pfTotal,[Math]::Round(($pfUsed/$pfTotal)*100,1)
+$pfPeak= if($pageFile) { ($pageFile | Measure-Object -Property PeakUsage -Sum).Sum } else { 0 }
+"  {0,-16}: {1,5} MB used of {2,5} MB ({3} %) {4,5}: {5} MB" -f "Swap file",$pfUsed,$pfTotal,[Math]::Round(($pfUsed/$pfTotal)*100,1),"Peak",$pfPeak
 ""
 
 # disk drive
