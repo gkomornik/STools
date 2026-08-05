@@ -243,7 +243,7 @@ Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3}
         "  {0,-16}: FS: {1,-6} Size: {2,7:N2} GB   Free: {3,7:N2} GB ({4} %)  {5,5}  BitLocker: {6}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),$_.FileSystem,($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive,((Get-BitLockerVolume -MountPoint $_.DeviceID).protectionStatus)
         #"  {0,-16}: AVG  " -f $avgDiskQueueLength
     } else {
-        "  {0,-16}: Size: {1,7:N2} GB   Free: {2,7:N2} GB ({3} %)  {4}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive
+        "  {0,-16}: FS: {1,-6} Size: {2,7:N2} GB   Free: {3,7:N2} GB ({4} %)  {5}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),$_.FileSystem,($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive
     }
 }
 if (!$isAdmin -and $isBitLockerCMDSupport) {Write-Host "  * Run with elevated privileges to see information about Bitlocker" -ForegroundColor DarkYellow}
