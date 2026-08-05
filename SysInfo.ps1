@@ -222,10 +222,26 @@ Write-Host "LOGICAL DISC:" -ForegroundColor Cyan
 #$sysDrive = (Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").DeviceID
 Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3} | ForEach-Object {
     if ($_.DeviceID -eq $Env:SystemDrive) { $sysDrive = "[SYS]" } else { $sysDrive = "" }
+
+
+    <# NOT WORKING FOR VIRTUAL DRIVE
+    $avgDiskQueueLength=-1
+        # windows version "en-US"
+        if (([System.Globalization.CultureInfo]::InstalledUICulture).Name -eq "en-US") {
+            #$avgDiskQueueLength=(Get-counter -Counter "\PhysicalDisk(0 $($_.DeviceID))\Avg. Disk Queue Length").CounterSamples[0].CookedValue
+        }
+        # windows version "pl-PL"
+        if (([System.Globalization.CultureInfo]::InstalledUICulture).Name -eq "pl-PL") {
+            #$avgDiskQueueLength=(Get-counter -Counter "\Dysk fizyczny(0 $($_.DeviceID))\Średnia długość kolejki dysku").CounterSamples[0].CookedValue
+        }
+    #>
+
     #"  {0,-20}: Size: {1,8:N2} GB   Free space: {2,8:N2} GB ({3} %) {4}" -f ($_.VolumeName+" ("+$_.DeviceID+")"),($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive
     if ($isAdmin -and $isBitLockerCMDSupport) {
         #"  {0,-16}: Size: {1,7:N2} GB   Free: {2,7:N2} GB ({3} %)  {4,5}  BitLocker: {5}" -f ($_.VolumeName+" ("+$_.DeviceID+")"),($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive,((Get-BitLockerVolume -MountPoint $_.DeviceID).protectionStatus)
-        "  {0,-16}: Size: {1,7:N2} GB   Free: {2,7:N2} GB ({3} %)  {4,5}  BitLocker: {5}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive,((Get-BitLockerVolume -MountPoint $_.DeviceID).protectionStatus)
+        #"  {0,-16}: Size: {1,7:N2} GB   Free: {2,7:N2} GB ({3} %)  {4,5}  BitLocker: {5}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive,((Get-BitLockerVolume -MountPoint $_.DeviceID).protectionStatus)
+        "  {0,-16}: FS: {1,-6} Size: {2,7:N2} GB   Free: {3,7:N2} GB ({4} %)  {5,5}  BitLocker: {6}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),$_.FileSystem,($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive,((Get-BitLockerVolume -MountPoint $_.DeviceID).protectionStatus)
+        #"  {0,-16}: AVG  " -f $avgDiskQueueLength
     } else {
         "  {0,-16}: Size: {1,7:N2} GB   Free: {2,7:N2} GB ({3} %)  {4}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive
     }
