@@ -223,27 +223,36 @@ Write-Host "LOGICAL DISC:" -ForegroundColor Cyan
 Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3} | ForEach-Object {
     if ($_.DeviceID -eq $Env:SystemDrive) { $sysDrive = "[SYS]" } else { $sysDrive = "" }
 
-
-    <# NOT WORKING FOR VIRTUAL DRIVE
     $avgDiskQueueLength=-1
         # windows version "en-US"
         if (([System.Globalization.CultureInfo]::InstalledUICulture).Name -eq "en-US") {
-            #$avgDiskQueueLength=(Get-counter -Counter "\PhysicalDisk(0 $($_.DeviceID))\Avg. Disk Queue Length").CounterSamples[0].CookedValue
+            #"\PhysicalDisk($((Get-Partition -DriveLetter $_.DeviceID.Substring(0,1)).DiskNumber) $($_.DeviceID))\Avg. Disk Queue Length"
+            $avgDiskQueueLength=(Get-counter -Counter "\PhysicalDisk($((Get-Partition -DriveLetter $_.DeviceID.Substring(0,1)).DiskNumber) $($_.DeviceID))\Avg. Disk Queue Length").CounterSamples[0].CookedValue
         }
         # windows version "pl-PL"
         if (([System.Globalization.CultureInfo]::InstalledUICulture).Name -eq "pl-PL") {
-            #$avgDiskQueueLength=(Get-counter -Counter "\Dysk fizyczny(0 $($_.DeviceID))\Średnia długość kolejki dysku").CounterSamples[0].CookedValue
+            $avgDiskQueueLength=(Get-counter -Counter "\Dysk fizyczny($((Get-Partition -DriveLetter $_.DeviceID.Substring(0,1)).DiskNumber) $($_.DeviceID))\Średnia długość kolejki dysku").CounterSamples[0].CookedValue
         }
-    #>
+
+    #Write-Warning (Get-Partition -DriveLetter $_.DeviceID.Substring(0,1)).DiskNumber
+    #Write-Warning (Get-PhysicalDisk -DeviceNumber (Get-Partition -DriveLetter $_.DeviceID.Substring(0,1)).DiskNumber)
+    #$physicalDisk = Get-PhysicalDisk -DeviceNumber ((Get-Partition -DriveLetter $_.DeviceID.Substring(0,1)).DiskNumber)
 
     #"  {0,-20}: Size: {1,8:N2} GB   Free space: {2,8:N2} GB ({3} %) {4}" -f ($_.VolumeName+" ("+$_.DeviceID+")"),($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive
     if ($isAdmin -and $isBitLockerCMDSupport) {
         #"  {0,-16}: Size: {1,7:N2} GB   Free: {2,7:N2} GB ({3} %)  {4,5}  BitLocker: {5}" -f ($_.VolumeName+" ("+$_.DeviceID+")"),($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive,((Get-BitLockerVolume -MountPoint $_.DeviceID).protectionStatus)
         #"  {0,-16}: Size: {1,7:N2} GB   Free: {2,7:N2} GB ({3} %)  {4,5}  BitLocker: {5}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive,((Get-BitLockerVolume -MountPoint $_.DeviceID).protectionStatus)
         "  {0,-16}: FS: {1,-6} Size: {2,7:N2} GB   Free: {3,7:N2} GB ({4} %)  {5,5}  BitLocker: {6}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),$_.FileSystem,($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive,((Get-BitLockerVolume -MountPoint $_.DeviceID).protectionStatus)
-        #"  {0,-16}: AVG  " -f $avgDiskQueueLength
+        "  {0,-16}  Avg Disk Queue Length:  {1:N2}" -f "",$avgDiskQueueLength
+        #"  {0,-16}  HealthStatus:  {1:N2}" -f "",$physicalDisk.HealthStatus
+        #"  {0,-16}  BusType:  {1:N2}" -f "",$physicalDisk.BusType
+        #"  {0,-16}  MediaType:  {1:N2}" -f "",$physicalDisk.MediaType
+        #"  {0,-16}  FirmwareVersion:  {1:N2}" -f "",$physicalDisk.FirmwareVersion
+
+
     } else {
         "  {0,-16}: FS: {1,-6} Size: {2,7:N2} GB   Free: {3,7:N2} GB ({4} %)  {5}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),$_.FileSystem,($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive
+        "  {0,-16}  Avg Disk Queue Length:  {1:N2}" -f "",$avgDiskQueueLength
     }
 }
 if (!$isAdmin -and $isBitLockerCMDSupport) {Write-Host "  * Run with elevated privileges to see information about Bitlocker" -ForegroundColor DarkYellow}
