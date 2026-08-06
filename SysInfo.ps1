@@ -293,7 +293,7 @@ Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3}
     if (-1 -ne $avgDiskQueueLength) {
         "  {0,-16}  Avg Disk Queue Length          : {1:N2}" -f "",$avgDiskQueueLength
     } 
-    Write-Warning $avgDiskQueueLength
+    #Write-Warning $avgDiskQueueLength
     if ($isAdmin -and $isBitLockerCMDSupport) {
 
         $bitLockerInfo = Get-BitLockerVolume -MountPoint $_.DeviceID
