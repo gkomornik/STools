@@ -246,7 +246,7 @@ Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3}
         if (([System.Globalization.CultureInfo]::InstalledUICulture).Name -eq "en-US") {
             #"\PhysicalDisk($((Get-Partition -DriveLetter $_.DeviceID.Substring(0,1)).DiskNumber) $($_.DeviceID))\Avg. Disk Queue Length"
             try {
-                $avgDiskQueueLength=(Get-counter -Counter "\PhysicalDisk($((Get-Partition -DriveLetter $_.DeviceID.Substring(0,1)).DiskNumber) $($_.DeviceID))\Avg. Disk Queue Length").CounterSamples[0].CookedValue
+                $avgDiskQueueLength=(Get-counter -Counter "\PhysicalDisk($((Get-Partition -DriveLetter $_.DeviceID.Substring(0,1)).DiskNumber) $($_.DeviceID))\Avg. Disk Queue Length" -ErrorAction Stop).CounterSamples[0].CookedValue
             }
             catch {
                 <#Do this if a terminating exception happens#>
@@ -255,7 +255,7 @@ Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3}
         # windows version "pl-PL"
         if (([System.Globalization.CultureInfo]::InstalledUICulture).Name -eq "pl-PL") {
             try {
-                $avgDiskQueueLength=(Get-counter -Counter "\Dysk fizyczny($((Get-Partition -DriveLetter $_.DeviceID.Substring(0,1)).DiskNumber) $($_.DeviceID))\Średnia długość kolejki dysku").CounterSamples[0].CookedValue
+                $avgDiskQueueLength=(Get-counter -Counter "\Dysk fizyczny($((Get-Partition -DriveLetter $_.DeviceID.Substring(0,1)).DiskNumber) $($_.DeviceID))\Średnia długość kolejki dysku" -ErrorAction Stop).CounterSamples[0].CookedValue
             }
             catch {
                 <#Do this if a terminating exception happens#>
