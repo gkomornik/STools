@@ -245,11 +245,21 @@ Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3}
         # windows version "en-US"
         if (([System.Globalization.CultureInfo]::InstalledUICulture).Name -eq "en-US") {
             #"\PhysicalDisk($((Get-Partition -DriveLetter $_.DeviceID.Substring(0,1)).DiskNumber) $($_.DeviceID))\Avg. Disk Queue Length"
-            $avgDiskQueueLength=(Get-counter -Counter "\PhysicalDisk($((Get-Partition -DriveLetter $_.DeviceID.Substring(0,1)).DiskNumber) $($_.DeviceID))\Avg. Disk Queue Length").CounterSamples[0].CookedValue
+            try {
+                $avgDiskQueueLength=(Get-counter -Counter "\PhysicalDisk($((Get-Partition -DriveLetter $_.DeviceID.Substring(0,1)).DiskNumber) $($_.DeviceID))\Avg. Disk Queue Length").CounterSamples[0].CookedValue
+            }
+            catch {
+                <#Do this if a terminating exception happens#>
+            }
         }
         # windows version "pl-PL"
         if (([System.Globalization.CultureInfo]::InstalledUICulture).Name -eq "pl-PL") {
-            $avgDiskQueueLength=(Get-counter -Counter "\Dysk fizyczny($((Get-Partition -DriveLetter $_.DeviceID.Substring(0,1)).DiskNumber) $($_.DeviceID))\Średnia długość kolejki dysku").CounterSamples[0].CookedValue
+            try {
+                $avgDiskQueueLength=(Get-counter -Counter "\Dysk fizyczny($((Get-Partition -DriveLetter $_.DeviceID.Substring(0,1)).DiskNumber) $($_.DeviceID))\Średnia długość kolejki dysku").CounterSamples[0].CookedValue
+            }
+            catch {
+                <#Do this if a terminating exception happens#>
+            }
         }
 
     #Write-Warning (Get-Partition -DriveLetter $_.DeviceID.Substring(0,1)).DiskNumber
@@ -260,7 +270,7 @@ Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3}
     if ($isAdmin -and $isBitLockerCMDSupport) {
         #"  {0,-16}: Size: {1,7:N2} GB   Free: {2,7:N2} GB ({3} %)  {4,5}  BitLocker: {5}" -f ($_.VolumeName+" ("+$_.DeviceID+")"),($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive,((Get-BitLockerVolume -MountPoint $_.DeviceID).protectionStatus)
         #"  {0,-16}: Size: {1,7:N2} GB   Free: {2,7:N2} GB ({3} %)  {4,5}  BitLocker: {5}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive,((Get-BitLockerVolume -MountPoint $_.DeviceID).protectionStatus)
-        "  {0,-16}: FS: {1,-6} Size: {2,7:N2} GB   Free: {3,7:N2} GB ({4} %)  {5,5}  BitLocker: {6}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),$_.FileSystem,($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive,((Get-BitLockerVolume -MountPoint $_.DeviceID).protectionStatus)
+        "  {0,-16}: FileSystem: {1,-6} Size: {2,7:N2} GB   Free: {3,7:N2} GB ({4} %)  {5,5}  BitLocker: {6}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),$_.FileSystem,($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive,((Get-BitLockerVolume -MountPoint $_.DeviceID).protectionStatus)
         "  {0,-16}  Avg Disk Queue Length:  {1:N2}" -f "",$avgDiskQueueLength
         #"  {0,-16}  HealthStatus:  {1:N2}" -f "",$physicalDisk.HealthStatus
         #"  {0,-16}  BusType:  {1:N2}" -f "",$physicalDisk.BusType
@@ -269,7 +279,7 @@ Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3}
 
 
     } else {
-        "  {0,-16}: FS: {1,-6} Size: {2,7:N2} GB   Free: {3,7:N2} GB ({4} %)  {5}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),$_.FileSystem,($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive
+        "  {0,-16}: FileSystem: {1,-6} Size: {2,7:N2} GB   Free: {3,7:N2} GB ({4} %)  {5}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),$_.FileSystem,($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive
         "  {0,-16}  Avg Disk Queue Length:  {1:N2}" -f "",$avgDiskQueueLength
     }
 }
