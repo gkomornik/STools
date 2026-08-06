@@ -192,11 +192,28 @@ $pfPeak= if($pageFile) { ($pageFile | Measure-Object -Property PeakUsage -Sum).S
 ""
 
 # disk drive
+<#
 Write-Host "DISK DRIVE:" -ForegroundColor Cyan
 #Get-CimInstance -ClassName Win32_DiskDrive | Format-Table @{Label="Disk Drive";Expression={$_.Caption}},@{Label="Size";Expression={$_.Size / 1gb}}
 Get-CimInstance -ClassName Win32_DiskDrive | ForEach-Object {
     #"  {0,-16}: {1,-30} Size: {2,7:N2} GB SN: {3}" -f "Name",$_.Caption,($_.Size / 1GB),$_.SerialNumber
     "  {0,-16}: {1,-30} Size: {2,7:N2} GB" -f "Name",$_.Caption,($_.Size / 1GB)
+}
+""
+#>
+
+# physical disk
+Write-Host "PHYSICAL DISK:" -ForegroundColor Cyan
+Get-PhysicalDisk | ForEach-Object {
+    "  {0,-16}: {1}" -f $_.DeviceID,$_.Model
+    "  {0,-16}  Size               : {1:N2} GB" -f "",($_.Size / 1GB)
+    "  {0,-16}  BusType            : {1}" -f "",$_.BusType
+    "  {0,-16}  MediaType          : {1}" -f "",$_.MediaType
+    "  {0,-16}  FirmwareVersion    : {1}" -f "",$_.FirmwareVersion
+    "  {0,-16}  LogicalSectorSize  : {1}" -f "",$_.LogicalSectorSize
+    "  {0,-16}  PhysicalSectorSize : {1}" -f "",$_.PhysicalSectorSize
+    "  {0,-16}  HealthStatus       : {1}" -f "",$_.HealthStatus
+    "  {0,-16}  SerialNumber       : {1}" -f "",$_.SerialNumber
 }
 ""
 #Format-Table @{Label="Disk Drive";Expression={$_.Caption}},@{Label="Size";Expression={$_.Size / 1gb}}
