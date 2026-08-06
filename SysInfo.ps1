@@ -291,6 +291,10 @@ Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3}
     #>
     "  {0,-16}: FileSystem: {1,-6} Size: {2,7:N2} GB   Free: {3,7:N2} GB ({4} %)  {5,5}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),$_.FileSystem,($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive
     if ($isAdmin -and $isBitLockerCMDSupport) {
+        if (-1 -ne $avgDiskQueueLength) {
+            "  {0,-16}  Avg Disk Queue Length          : {1:N2}" -f "",$avgDiskQueueLength
+        } 
+
         "  {0,-16}  BitLocker ProtectionStatus     : {1}" -f "",((Get-BitLockerVolume -MountPoint $_.DeviceID).ProtectionStatus)
         "  {0,-16}  BitLocker VolumeStatus         : {1}" -f "",((Get-BitLockerVolume -MountPoint $_.DeviceID).VolumeStatus)
         "  {0,-16}  BitLocker EncryptionPercentage : {1}" -f "",((Get-BitLockerVolume -MountPoint $_.DeviceID).EncryptionPercentage)
