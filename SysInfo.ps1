@@ -295,10 +295,11 @@ Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3}
             "  {0,-16}  Avg Disk Queue Length          : {1:N2}" -f "",$avgDiskQueueLength
         } 
 
-        "  {0,-16}  BitLocker ProtectionStatus     : {1}" -f "",((Get-BitLockerVolume -MountPoint $_.DeviceID).ProtectionStatus)
-        "  {0,-16}  BitLocker VolumeStatus         : {1}" -f "",((Get-BitLockerVolume -MountPoint $_.DeviceID).VolumeStatus)
-        "  {0,-16}  BitLocker EncryptionPercentage : {1}" -f "",((Get-BitLockerVolume -MountPoint $_.DeviceID).EncryptionPercentage)
-        "  {0,-16}  BitLocker EncryptionMethod     : {1}" -f "",((Get-BitLockerVolume -MountPoint $_.DeviceID).EncryptionMethod)
+        $bitLockerInfo = Get-BitLockerVolume -MountPoint $_.DeviceID
+        "  {0,-16}  BitLocker ProtectionStatus     : {1}" -f "",$bitLockerInfo.ProtectionStatus
+        "  {0,-16}  BitLocker VolumeStatus         : {1}" -f "",$bitLockerInfo.VolumeStatus
+        "  {0,-16}  BitLocker EncryptionPercentage : {1}" -f "",$bitLockerInfo.EncryptionPercentage
+        "  {0,-16}  BitLocker EncryptionMethod     : {1}" -f "",$bitLockerInfo.EncryptionMethod
     }
 }
 if (!$isAdmin -and $isBitLockerCMDSupport) {Write-Host "  * Run with elevated privileges to see information about Bitlocker" -ForegroundColor DarkYellow}
