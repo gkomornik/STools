@@ -291,7 +291,12 @@ Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3}
     }
     #>
     #"  {0,-16}: FileSystem: {1,-6} Size: {2,7:N2} GB   Free: {3,7:N2} GB ({4} %)  {5,5}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),$_.FileSystem,($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive
-    "  {0,-16}: FileSystem             : {1,-6} {2}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),$_.FileSystem,$sysDrive
+
+    if ($null -ne $_.VolumeName) {
+        "  {0,-16}: FileSystem             : {1,-6} {2}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),$_.FileSystem,$sysDrive
+    } else {
+        "  {0,-16}: FileSystem             : {1,-6} {2}" -f $_.DeviceID,$_.FileSystem,$sysDrive
+    }
     "  {0,-16}  Size                   : {1:N2} GB" -f "",($_.Size / 1GB)
     "  {0,-16}  Free                   : {1:N2} GB ({2} %)" -f "",($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1)
     if (-1 -ne $avgDiskQueueLength) {
