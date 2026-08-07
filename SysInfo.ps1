@@ -70,6 +70,8 @@ if ($null -ne $os_version.DisplayVersion) {
 }
 "  {0,-16}: {1}.{2}" -f "Version",$os_version.CurrentBuildNumber,$os_version.UBR
 "  {0,-16}: {1}" -f "ProductId",$os_version.ProductId
+"  {0,-16}: {1}" -f "Language",(Get-Culture).TextInfo.ToTitleCase(([System.Globalization.CultureInfo]::InstalledUICulture).DisplayName)
+
  
 $timespan_bootup = (Get-Date)-$os.LastBootUpTime
 $timespan_installdate = (Get-Date)-$os.InstallDate
@@ -216,22 +218,6 @@ Get-CimInstance -ClassName Win32_PhysicalMemory | ForEach-Object {
 "  {0,-16}: {1} GB" -f "Total size",((get-CimInstance -ClassName win32_physicalmemory | Measure-Object -Property Capacity -Sum).Sum /1gb)
 ""
 
-# physical disk
-Write-Host "PHYSICAL DISK:" -ForegroundColor Cyan
-Get-PhysicalDisk | ForEach-Object {
-    "  {0,-16}: {1}" -f $_.DeviceID,$_.Model
-    "  {0,-16}  Size                : {1:N2} GB" -f "",($_.Size / 1GB)
-    "  {0,-16}  BusType             : {1}" -f "",$_.BusType
-    "  {0,-16}  MediaType           : {1}" -f "",$_.MediaType
-    "  {0,-16}  FirmwareVersion     : {1}" -f "",$_.FirmwareVersion
-    "  {0,-16}  LogicalSectorSize   : {1}" -f "",$_.LogicalSectorSize
-    "  {0,-16}  PhysicalSectorSize  : {1}" -f "",$_.PhysicalSectorSize
-    "  {0,-16}  HealthStatus        : {1}" -f "",$_.HealthStatus
-    "  {0,-16}  SerialNumber        : {1}" -f "",$_.SerialNumber
-    "  {0,-16}  AdapterSerialNumber : {1}" -f "",$_.AdapterSerialNumber
-    ""
-}
-#""
 #Format-Table @{Label="Disk Drive";Expression={$_.Caption}},@{Label="Size";Expression={$_.Size / 1gb}}
 
 #if (Get-Command Get-BitLockerVolume -ErrorAction SilentlyContinue) {$isBitLockerCMDSupport=$true} else {$isBitLockerCMDSupport=$false}
@@ -364,7 +350,24 @@ if (!$isAdmin) {Write-Host "  * Run with elevated privileges to see information 
 ""
 #>
 
-# TO-DO: Add mac address
+# physical disk
+Write-Host "PHYSICAL DISK:" -ForegroundColor Cyan
+Get-PhysicalDisk | ForEach-Object {
+    "  {0,-16}: {1}" -f $_.DeviceID,$_.Model
+    "  {0,-16}  Size                : {1:N2} GB" -f "",($_.Size / 1GB)
+    "  {0,-16}  BusType             : {1}" -f "",$_.BusType
+    "  {0,-16}  MediaType           : {1}" -f "",$_.MediaType
+    "  {0,-16}  FirmwareVersion     : {1}" -f "",$_.FirmwareVersion
+    "  {0,-16}  LogicalSectorSize   : {1}" -f "",$_.LogicalSectorSize
+    "  {0,-16}  PhysicalSectorSize  : {1}" -f "",$_.PhysicalSectorSize
+    "  {0,-16}  HealthStatus        : {1}" -f "",$_.HealthStatus
+    "  {0,-16}  SerialNumber        : {1}" -f "",$_.SerialNumber
+    "  {0,-16}  AdapterSerialNumber : {1}" -f "",$_.AdapterSerialNumber
+    ""
+}
+#""
+
+# TO-DO: Add mac address - done
 # Get-NetAdapter -InterfaceIndex 24 | select Name,MacAddress
 # ip info
 
