@@ -293,12 +293,16 @@ Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3}
     #"  {0,-16}: FileSystem: {1,-6} Size: {2,7:N2} GB   Free: {3,7:N2} GB ({4} %)  {5,5}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),$_.FileSystem,($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive
 
     if (![string]::IsNullOrEmpty($_.VolumeName)) {
-        "  {0,-16}: FileSystem             : {1,-6} {2}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),$_.FileSystem,$sysDrive
+        "  {0,-16}: FileSystem             : {1,-6}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),$_.FileSystem
     } else {
-        "  {0,-16}: FileSystem             : {1,-6} {2}" -f $_.DeviceID,$_.FileSystem,$sysDrive
+        "  {0,-16}: FileSystem             : {1,-6}" -f $_.DeviceID,$_.FileSystem
     }
     "  {0,-16}  Size                   : {1:N2} GB" -f "",($_.Size / 1GB)
     "  {0,-16}  Free                   : {1:N2} GB ({2} %)" -f "",($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1)
+
+    if ($sysDrive -eq "[SYSTEM DRIVE]") {
+        "  {0,-16}  SystemDrive            : {1}" -f "",$true
+    }
     if (-1 -ne $avgDiskQueueLength) {
         "  {0,-16}  Avg Disk Queue Length  : {1:N2}" -f "",$avgDiskQueueLength
     } 
