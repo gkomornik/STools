@@ -386,7 +386,6 @@ foreach ($ip in $ip_address) {
     "  {0,-16}: {1,-18} MAC: {2,-20} LinkSpeed: {3,-20}`n  {4,-16}  {5,-16}" -f "IPv4",$_.IPAddress,$netAdapter.MacAddress,$netAdapter.LinkSpeed," ",$netAdapter.ifDesc #,$netAdapter.DriverDescription
 }
 
-
 #"IP Address`t`t: {0}" -f (Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4).IPAddress
 #"  {0,-20}: {1}" -f "IPV4",$ip_address
 ""
