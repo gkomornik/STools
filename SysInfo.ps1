@@ -205,7 +205,9 @@ Get-CimInstance -ClassName Win32_DiskDrive | ForEach-Object {
 # physical memory
 Write-Host "PHYSICAL MEMORY:" -ForegroundColor Cyan
 Get-CimInstance -ClassName Win32_PhysicalMemory | ForEach-Object {
-    "  {0,-16}: PartNumber          : {1}" -f $_.Manufacturer,$_.PartNumber
+    #"  {0,-16}: PartNumber          : {1}" -f $_.Manufacturer,$_.PartNumber
+    "  {0,-16}: {1}" -f "Manufacturer",$_.Manufacturer
+    "  {0,-16}  PartNumber          : {1}" -f "",$_.PartNumber
     "  {0,-16}  SerialNumber        : {1}" -f "",$_.SerialNumber
     "  {0,-16}  Capacity            : {1} GB" -f "",($_.Capacity / 1GB)
     "  {0,-16}  DeviceLocator       : {1}" -f "",$_.DeviceLocator
