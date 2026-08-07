@@ -8,9 +8,9 @@
 #$Error.Clear()
 $t_start = Get-Date
 
-Write-Host "========================================================================================" -ForegroundColor Yellow
-Write-Host "                               SYSTEM INFORMATION SUMMARY                               " -ForegroundColor Yellow
-Write-Host "========================================================================================" -ForegroundColor Yellow
+Write-Host "====================================================================================================" -ForegroundColor Yellow
+Write-Host "                                     SYSTEM INFORMATION SUMMARY                                     " -ForegroundColor Yellow
+Write-Host "====================================================================================================" -ForegroundColor Yellow
 #"Date`t`t`t: {0}" -f (Get-Date -Format 'dddd').ToUpper()[0]+(Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss').Substring(1)
 #"{0,-9}: {1}" -f "Date",(Get-Date -Format 'dddd').ToUpper()[0]+(Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss').Substring(1)
 "  {0,-10}: {1}" -f "Date",(Get-Date -Format 'dddd').ToUpper()[0]+(Get-Date -Format 'dddd, dd MMMM yyyy HH:mm:ss').Substring(1)
@@ -21,7 +21,7 @@ Write-Host "====================================================================
 
 #"{0,-9}: {1}" -f "Computer",(hostname)
 #"  {0,-10}: {1}" -f "User name",(Get-CimInstance -ClassName Win32_ComputerSystem).UserName
-Write-Host "----------------------------------------------------------------------------------------"
+Write-Host "----------------------------------------------------------------------------------------------------"
 ""
 
 $isAdmin=([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
@@ -387,7 +387,7 @@ foreach ($ip in $ip_address) {
 #"IP Address`t`t: {0}" -f (Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4).IPAddress
 #"  {0,-20}: {1}" -f "IPV4",$ip_address
 ""
-Write-Host "----------------------------------------------------------------------------------------"
+Write-Host "----------------------------------------------------------------------------------------------------"
 "Execution time: {0}" -f ((Get-Date)-$t_start).ToString() | Write-Host -ForegroundColor DarkGray
 ""
 #"Error : {0}" -f $Error.Count | Write-Host -ForegroundColor DarkGray
