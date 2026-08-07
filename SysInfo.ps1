@@ -176,11 +176,11 @@ Get-CimInstance -ClassName Win32_VideoController | ForEach-Object {
 #"Graphic card`t`t: {0}" -f (Get-CimInstance Win32_VideoController).Name
 ""
 
-# memory info
+# memory & page file info
 Write-Host "MEMORY:" -ForegroundColor Cyan
-$mem = Get-CimInstance Win32_OperatingSystem
-$totalRam = [Math]::Round($mem.TotalVisibleMemorySize / 1MB, 2)
-$freeRam = [Math]::Round($mem.FreePhysicalMemory / 1MB, 2)
+#$mem = Get-CimInstance Win32_OperatingSystem
+$totalRam = [Math]::Round($os.TotalVisibleMemorySize / 1MB, 2)
+$freeRam = [Math]::Round($os.FreePhysicalMemory / 1MB, 2)
 $usedRam = $totalRam - $freeRam
 #"Memory`t`t`t: {0:N2} GB used of {1:N2} GB" -f ([Math]::Round((Get-CimInstance Win32_OperatingSystem).TotalVisibleMemorySize / 1MB, 2)-[Math]::Round((Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory / 1MB, 2)),([Math]::Round((Get-CimInstance Win32_OperatingSystem).TotalVisibleMemorySize / 1MB, 2))
 "  {0,-16}: {1,5:N2} GB used of {2,5:N2} GB ({3} %)" -f "Ram",$usedRam,$totalRam,[Math]::Round((($usedRam/$totalRam)*100),1)
@@ -215,8 +215,9 @@ Get-PhysicalDisk | ForEach-Object {
     "  {0,-16}  HealthStatus        : {1}" -f "",$_.HealthStatus
     "  {0,-16}  SerialNumber        : {1}" -f "",$_.SerialNumber
     "  {0,-16}  AdapterSerialNumber : {1}" -f "",$_.AdapterSerialNumber
+    ""
 }
-""
+#""
 #Format-Table @{Label="Disk Drive";Expression={$_.Caption}},@{Label="Size";Expression={$_.Size / 1gb}}
 
 #if (Get-Command Get-BitLockerVolume -ErrorAction SilentlyContinue) {$isBitLockerCMDSupport=$true} else {$isBitLockerCMDSupport=$false}
@@ -239,7 +240,7 @@ if (Get-Command Get-BitLockerVolume -ErrorAction SilentlyContinue) {
 Write-Host "LOGICAL DISC:" -ForegroundColor Cyan
 #$sysDrive = (Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").DeviceID
 Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3} | ForEach-Object {
-    if ($_.DeviceID -eq $Env:SystemDrive) { $sysDrive = "[SYS]" } else { $sysDrive = "" }
+    if ($_.DeviceID -eq $Env:SystemDrive) { $sysDrive = "[SYSTEM DRIVE]" } else { $sysDrive = "" }
 
     $avgDiskQueueLength=-1
         # windows version "en-US"
@@ -289,24 +290,33 @@ Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3}
         "  {0,-16}  Avg Disk Queue Length:  {1:N2}" -f "",$avgDiskQueueLength
     }
     #>
-    "  {0,-16}: FileSystem: {1,-6} Size: {2,7:N2} GB   Free: {3,7:N2} GB ({4} %)  {5,5}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),$_.FileSystem,($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive
+    #"  {0,-16}: FileSystem: {1,-6} Size: {2,7:N2} GB   Free: {3,7:N2} GB ({4} %)  {5,5}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),$_.FileSystem,($_.Size / 1GB),($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1),$sysDrive
+    "  {0,-16}: FileSystem             : {1,-6} {2}" -f ($_.DeviceID+" ("+$_.VolumeName+")"),$_.FileSystem,$sysDrive
+    "  {0,-16}  Size                   : {1:N2} GB" -f "",($_.Size / 1GB)
+    "  {0,-16}  Free                   : {1:N2} GB ({2} %)" -f "",($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1)
     if (-1 -ne $avgDiskQueueLength) {
-        "  {0,-16}  Avg Disk Queue Length          : {1:N2}" -f "",$avgDiskQueueLength
+        "  {0,-16}  Avg Disk Queue Length  : {1:N2}" -f "",$avgDiskQueueLength
     } 
     #Write-Warning $avgDiskQueueLength
     if ($isAdmin -and $isBitLockerCMDSupport) {
-
+        "  {0,-16}  BitLocker information" -f ""
         $bitLockerInfo = Get-BitLockerVolume -MountPoint $_.DeviceID
-        "  {0,-16}  BitLocker ProtectionStatus     : {1}" -f "",$bitLockerInfo.ProtectionStatus
-        "  {0,-16}  BitLocker VolumeStatus         : {1}" -f "",$bitLockerInfo.VolumeStatus
-        "  {0,-16}  BitLocker EncryptionPercentage : {1}" -f "",$bitLockerInfo.EncryptionPercentage
-        "  {0,-16}  BitLocker EncryptionMethod     : {1}" -f "",$bitLockerInfo.EncryptionMethod
+        #"  {0,-16}  BitLocker ProtectionStatus     : {1}" -f "",$bitLockerInfo.ProtectionStatus
+        #"  {0,-16}  BitLocker VolumeStatus         : {1}" -f "",$bitLockerInfo.VolumeStatus
+        #"  {0,-16}  BitLocker EncryptionPercentage : {1}" -f "",$bitLockerInfo.EncryptionPercentage
+        #"  {0,-16}  BitLocker EncryptionMethod     : {1}" -f "",$bitLockerInfo.EncryptionMethod
+
+        "  {0,-16}    ProtectionStatus     : {1}" -f "",$bitLockerInfo.ProtectionStatus
+        "  {0,-16}    VolumeStatus         : {1}" -f "",$bitLockerInfo.VolumeStatus
+        "  {0,-16}    EncryptionPercentage : {1}" -f "",$bitLockerInfo.EncryptionPercentage
+        "  {0,-16}    EncryptionMethod     : {1}" -f "",$bitLockerInfo.EncryptionMethod
     }
+    ""
 }
 if (!$isAdmin -and $isBitLockerCMDSupport) {Write-Host "  * Run with elevated privileges to see information about Bitlocker" -ForegroundColor DarkYellow}
 #"System drive`t`t: {0} Size: {1:N2} GB | Free space: {2:N2} GB ({3} %)" -f (Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").DeviceID,((Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").Size / 1GB),((Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").FreeSpace / 1GB),[Math]::Round((((Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").FreeSpace) / ((Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").Size)) * 100, 1)
 #"  {0,-20}: {1} Size: {2:N2} GB | Free space: {3:N2} GB ({4} %)" -f "System drive",(Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").DeviceID,((Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").Size / 1GB),((Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").FreeSpace / 1GB),[Math]::Round((((Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").FreeSpace) / ((Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='$Env:SystemDrive'").Size)) * 100, 1)
-""
+#""
 
 <#
 # version 2
