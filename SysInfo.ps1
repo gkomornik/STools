@@ -379,7 +379,8 @@ if (!$isAdmin) {Write-Host "  * Run with elevated privileges to see information 
 Write-Host "PHYSICAL DISK:" -ForegroundColor Cyan
 Get-PhysicalDisk | ForEach-Object {
     "  {0,-16}: {1}" -f $_.DeviceID,$_.Model
-    "  {0,-16}  Size                : {1:N2} GB" -f "",($_.Size / 1GB)
+    #"  {0,-16}  Size                : {1:N2} GB" -f "",($_.Size / 1GB)
+    if (($_.Size / 1TB) -ge 1) {"  {0,-16}  Size                : {1:N2} TB" -f "",($_.Size / 1TB)} else {"  {0,-16}  Size                : {1:N2} GB" -f "",($_.Size / 1GB)}
     "  {0,-16}  BusType             : {1}" -f "",$_.BusType
     "  {0,-16}  MediaType           : {1}" -f "",$_.MediaType
     "  {0,-16}  FirmwareVersion     : {1}" -f "",$_.FirmwareVersion
