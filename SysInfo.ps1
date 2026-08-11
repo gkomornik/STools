@@ -155,6 +155,17 @@ Get-CimInstance -ClassName Win32_Processor | ForEach-Object {
 #"Processor`t`t: {0} ({1} Cores)" -f ((Get-CimInstance -ClassName Win32_Processor).Name),(Get-CimInstance -ClassName Win32_Processor).NumberOfLogicalProcessors
 ""
 
+# base board info 
+Write-Host "BASE BOARD:" -ForegroundColor Cyan
+Get-CimInstance -ClassName Win32_BaseBoard | ForEach-Object {
+    "  {0,-16}: {1}" -f "Model",$_.Product
+    "  {0,-16}: {1}" -f "Manufacturer",$_.Manufacturer
+    "  {0,-16}: {1}" -f "Version",$_.Version
+
+    ""
+}
+
+
 # video card info
 # vram not working
 
