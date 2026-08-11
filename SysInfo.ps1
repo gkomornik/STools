@@ -371,7 +371,7 @@ Get-PhysicalDisk | ForEach-Object {
 # Get-NetAdapter -InterfaceIndex 24 | select Name,MacAddress
 # ip info
 
-Write-Host "IP ADDRESS:" -ForegroundColor Cyan
+#!Write-Host "IP ADDRESS:" -ForegroundColor Cyan
 <#
 $ip_address=(Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4).IPAddress
 foreach ($ip in $ip_address) {
@@ -381,14 +381,48 @@ foreach ($ip in $ip_address) {
 
 (Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4) | ForEach-Object {
     #$_
-    $netAdapter=Get-NetAdapter -InterfaceIndex $_.InterfaceIndex
+    #!$netAdapter=Get-NetAdapter -InterfaceIndex $_.InterfaceIndex
     #"  {0,-16}: {1,-18} MAC: {2,-20} LinkSpeed: {3,-20}`n  {4,-16}  ifDesc: {5,-16}" -f "IPv4",$_.IPAddress,$netAdapter.MacAddress,$netAdapter.LinkSpeed," ",$netAdapter.ifDesc #,$netAdapter.DriverDescription
-    "  {0,-16}: {1,-18} MAC: {2,-20} LinkSpeed: {3,-20}`n  {4,-16}  {5,-16}" -f "IPv4",$_.IPAddress,$netAdapter.MacAddress,$netAdapter.LinkSpeed," ",$netAdapter.ifDesc #,$netAdapter.DriverDescription
+    #!"  {0,-16}: {1,-18} MAC: {2,-20} LinkSpeed: {3,-20}`n  {4,-16}  {5,-16}" -f "IPv4",$_.IPAddress,$netAdapter.MacAddress,$netAdapter.LinkSpeed," ",$netAdapter.ifDesc #,$netAdapter.DriverDescription
 }
 
 #"IP Address`t`t: {0}" -f (Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4).IPAddress
 #"  {0,-20}: {1}" -f "IPV4",$ip_address
 ""
+
+function Convert-PrefixToSubnetMask ($prefix) {
+    if ($prefix -lt 0 -or $prefix -gt 32) {
+        return ""
+    }
+    if ($prefix -eq 0) { return "0.0.0.0" }
+   
+    $maskArray = [System.BitConverter]::GetBytes([uint32]([Math]::Pow(2, 32) - 1) -shl (32 - $prefix))
+    [Array]::Reverse($maskArray)
+    return ([System.Net.IPAddress]$maskArray).IPAddressToString
+}
+
+Write-Host "NETWORK:" -ForegroundColor Cyan
+(Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4) | ForEach-Object {
+    #$_
+    $netAdapter = Get-NetAdapter -InterfaceIndex $_.InterfaceIndex
+    $netIPConfiguration = Get-NetIPConfiguration -InterfaceIndex $_.InterfaceIndex
+    $prefixLength = (Get-NetIPAddress -InterfaceIndex $_.InterfaceIndex -AddressFamily IPv4).PrefixLength
+    #"  {0,-16}: {1,-18} MAC: {2,-20} LinkSpeed: {3,-20}`n  {4,-16}  ifDesc: {5,-16}" -f "IPv4",$_.IPAddress,$netAdapter.MacAddress,$netAdapter.LinkSpeed," ",$netAdapter.ifDesc #,$netAdapter.DriverDescription
+    #"  {0,-16}: {1,-18} MAC: {2,-20} LinkSpeed: {3,-20}`n  {4,-16}  {5,-16}" -f "IPv4",$_.IPAddress,$netAdapter.MacAddress,$netAdapter.LinkSpeed," ",$netAdapter.ifDesc #,$netAdapter.DriverDescription
+    "  {0,-16}: {1}" -f $_.ifIndex,$netAdapter.ifDesc #,$netAdapter.DriverDescription
+    "  {0,-16}  IPv4                : {1}" -f "",$_.IPAddress
+    "  {0,-16}  IPv6                : {1}" -f "",(Get-NetIPAddress -InterfaceIndex $_.InterfaceIndex -AddressFamily IPv6).IPAddress
+    "  {0,-16}  Prefix Length       : {1}" -f "",$prefixLength
+    "  {0,-16}  Subnet Mask         : {1}" -f "",(Convert-PrefixToSubnetMask -prefix $prefixLength)
+    "  {0,-16}  MAC                 : {1}" -f "",$netAdapter.MacAddress
+    "  {0,-16}  LinkSpeed           : {1}" -f "",$netAdapter.LinkSpeed
+    "  {0,-16}  Default Gateway     : {1}" -f "",(($netIPConfiguration).IPv4DefaultGateway).NextHop
+    ($netIPConfiguration).DNSServer | Where-Object {$_.AddressFamily -eq 2} | ForEach-Object {$_.ServerAddresses | ForEach-Object {"  {0,-16}  DNS Servers         : {1}" -f "",$_  }}
+    ""
+}
+
+
+
 Write-Host "----------------------------------------------------------------------------------------------------"
 "Execution time: {0}" -f ((Get-Date)-$t_start).ToString() | Write-Host -ForegroundColor DarkGray
 ""
