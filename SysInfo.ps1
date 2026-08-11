@@ -233,7 +233,7 @@ Get-CimInstance -ClassName Win32_PhysicalMemory | ForEach-Object {
     "  {0,-16}  SerialNumber        : {1}" -f "",$_.SerialNumber
     "  {0,-16}  Capacity            : {1} GB" -f "",($_.Capacity / 1GB)
     "  {0,-16}  DeviceLocator       : {1}" -f "",$_.DeviceLocator
-    "  {0,-16}  Speed               : {1} MHz" -f "",$_.Speed
+    if (![string]::IsNullOrEmpty($_.Speed)) {"  {0,-16}  Speed               : {1} MHz" -f "",$_.Speed}
     ""
 }
 "  {0,-16}: {1} GB" -f "Total size",((get-CimInstance -ClassName win32_physicalmemory | Measure-Object -Property Capacity -Sum).Sum /1gb)
