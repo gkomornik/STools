@@ -168,7 +168,7 @@ Get-CimInstance -ClassName Win32_BaseBoard | ForEach-Object {
     ""
 }
 
-# base board info 
+# bios info 
 Write-Host "BIOS:" -ForegroundColor Cyan
 Get-CimInstance -ClassName Win32_Bios | ForEach-Object {
     "  {0,-16}: {1}" -f "Manufacturer",$_.Manufacturer
