@@ -152,7 +152,7 @@ Write-Host "PROCESSOR:" -ForegroundColor Cyan
 Get-CimInstance -ClassName Win32_Processor | ForEach-Object {
     #"  {0,-16}: {1} ({2} Cores)" -f "Model",$_.Name,$_.NumberOfLogicalProcessors
     "  {0,-16}: {1}" -f "Model",$_.Name
-    "  {0,-16}  Max Clock Speed     : {1:N2} GHz" -f "",($_.MaxClockSpeed / 1000)
+    "  {0,-16}  Max Clock Speed     : {1:N2} GHz" -f "",[math]::Round(($_.MaxClockSpeed / 1000),2)
     "  {0,-16}  Logical Processors  : {1}" -f "",$_.NumberOfLogicalProcessors
     ""
 }
