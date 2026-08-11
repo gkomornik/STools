@@ -170,8 +170,7 @@ Get-CimInstance -ClassName Win32_Bios | ForEach-Object {
     "  {0,-16}: {1}" -f "Manufacturer",$_.Manufacturer
     "  {0,-16}: {1}" -f "SMBIOSBIOSVer",$_.SMBIOSBIOSVersion
     "  {0,-16}: {1}" -f "Version",$_.Version
-    #"  {0,-16}: {1}" -f "Version",$_.Version
-
+    "  {0,-16}: {1}" -f "SerialNumber",$_.SerialNumber
     ""
 }
 
