@@ -485,12 +485,13 @@ Write-Host "NETWORK:" -ForegroundColor Cyan
 }
 
 # printer
-Write-Host "PRINTERS:" -ForegroundColor Cyan
+#Write-Host "PRINTERS:" -ForegroundColor Cyan
 
 #Get-Printer | Format-List @{Label="Name";Expression={$_.Name}},@{Label="DriverName";Expression={$_.DriverName}},@{Label="PortName";Expression={$_.PortName.SubString(0,10)}},@{Label="PrinterHostAddress";Expression={$portName=$_.PortName;(Get-PrinterPort | Where-Object {$_.Name -match $portName} | Select-Object PrinterHostAddress).PrinterHostAddress}}
 #Get-Printer | Where-Object DriverName -ne "Remote Desktop Easy Print" | Format-List @{Label="Name";Expression={$_.Name}},@{Label="DriverName";Expression={$_.DriverName}},@{Label="PortName";Expression={$_.PortName.SubString(0,10)}},@{Label="PrinterHostAddress";Expression={$portName=$_.PortName;(Get-PrinterPort | Where-Object {$_.Name -match $portName} | Select-Object PrinterHostAddress).PrinterHostAddress}}
+<#
 Get-Printer | Where-Object DriverName -ne "Remote Desktop Easy Print" | ForEach-Object {
-    $portName=$_.PortName;
+    $portName=$_.PortName
     $printerHostAddress=(Get-PrinterPort | Where-Object {$_.Name -match $portName} | Select-Object PrinterHostAddress).PrinterHostAddress
     "  {0,-16}: {1}" -f "Name",$_.Name
     "  {0,-16}: DriverName          : {1}" -f "",$_.DriverName
@@ -498,6 +499,7 @@ Get-Printer | Where-Object DriverName -ne "Remote Desktop Easy Print" | ForEach-
     "  {0,-16}: PrinterHostAddress  : {1}" -f "",$printerHostAddress
     ""
 }
+#>
 
 Write-Host "----------------------------------------------------------------------------------------------------"
 "Execution time: {0}" -f ((Get-Date)-$t_start).ToString() | Write-Host -ForegroundColor DarkGray
