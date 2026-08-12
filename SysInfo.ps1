@@ -411,8 +411,8 @@ Get-PhysicalDisk | ForEach-Object {
 
 # TO-DO: Add mac address - done
 # Get-NetAdapter -InterfaceIndex 24 | select Name,MacAddress
-# ip info
 
+# ip info
 #!Write-Host "IP ADDRESS:" -ForegroundColor Cyan
 <#
 $ip_address=(Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4).IPAddress
@@ -443,17 +443,36 @@ function Convert-PrefixToSubnetMask ($prefix) {
     return ([System.Net.IPAddress]$maskArray).IPAddressToString
 }
 
+# network
 Write-Host "NETWORK:" -ForegroundColor Cyan
 (Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4) | ForEach-Object {
     #$_
     $netAdapter = Get-NetAdapter -InterfaceIndex $_.InterfaceIndex
     $netIPConfiguration = Get-NetIPConfiguration -InterfaceIndex $_.InterfaceIndex
     $prefixLength = (Get-NetIPAddress -InterfaceIndex $_.InterfaceIndex -AddressFamily IPv4).PrefixLength
+
+    $ipv6=$null
+    try {
+        $ipv6 = (Get-NetIPAddress -InterfaceIndex $_.InterfaceIndex -AddressFamily IPv6 -ErrorAction Stop).IPAddress
+    }
+    catch {
+        <#Do this if a terminating exception happens#>
+    }
     #"  {0,-16}: {1,-18} MAC: {2,-20} LinkSpeed: {3,-20}`n  {4,-16}  ifDesc: {5,-16}" -f "IPv4",$_.IPAddress,$netAdapter.MacAddress,$netAdapter.LinkSpeed," ",$netAdapter.ifDesc #,$netAdapter.DriverDescription
     #"  {0,-16}: {1,-18} MAC: {2,-20} LinkSpeed: {3,-20}`n  {4,-16}  {5,-16}" -f "IPv4",$_.IPAddress,$netAdapter.MacAddress,$netAdapter.LinkSpeed," ",$netAdapter.ifDesc #,$netAdapter.DriverDescription
     "  {0,-16}: {1}" -f $_.ifIndex,$netAdapter.ifDesc #,$netAdapter.DriverDescription
     "  {0,-16}  IPv4                : {1}" -f "",$_.IPAddress
-    "  {0,-16}  IPv6                : {1}" -f "",(Get-NetIPAddress -InterfaceIndex $_.InterfaceIndex -AddressFamily IPv6).IPAddress
+    #"  {0,-16}  IPv6                : {1}" -f "",(Get-NetIPAddress -InterfaceIndex $_.InterfaceIndex -AddressFamily IPv6).IPAddress
+    if ($ipv6) {
+        #if ($ipv6.GetType().Fullname -eq [System.Object[]]) {
+        if ($ipv6 -is [Array]) {
+            $ipv6 | ForEach-Object {
+                "  {0,-16}  IPv6                : {1}" -f "",$_
+            }
+        } else {
+            "  {0,-16}  IPv6                : {1}" -f "",$ipv6
+        }
+    }
     "  {0,-16}  Prefix Length       : {1}" -f "",$prefixLength
     "  {0,-16}  Subnet Mask         : {1}" -f "",(Convert-PrefixToSubnetMask -prefix $prefixLength)
     "  {0,-16}  MAC                 : {1}" -f "",$netAdapter.MacAddress
@@ -463,7 +482,20 @@ Write-Host "NETWORK:" -ForegroundColor Cyan
     ""
 }
 
+# printer
+Write-Host "PRINTERS:" -ForegroundColor Cyan
 
+#Get-Printer | Format-List @{Label="Name";Expression={$_.Name}},@{Label="DriverName";Expression={$_.DriverName}},@{Label="PortName";Expression={$_.PortName.SubString(0,10)}},@{Label="PrinterHostAddress";Expression={$portName=$_.PortName;(Get-PrinterPort | Where-Object {$_.Name -match $portName} | Select-Object PrinterHostAddress).PrinterHostAddress}}
+#Get-Printer | Where-Object DriverName -ne "Remote Desktop Easy Print" | Format-List @{Label="Name";Expression={$_.Name}},@{Label="DriverName";Expression={$_.DriverName}},@{Label="PortName";Expression={$_.PortName.SubString(0,10)}},@{Label="PrinterHostAddress";Expression={$portName=$_.PortName;(Get-PrinterPort | Where-Object {$_.Name -match $portName} | Select-Object PrinterHostAddress).PrinterHostAddress}}
+Get-Printer | Where-Object DriverName -ne "Remote Desktop Easy Print" | ForEach-Object {
+    $portName=$_.PortName;
+    $printerHostAddress=(Get-PrinterPort | Where-Object {$_.Name -match $portName} | Select-Object PrinterHostAddress).PrinterHostAddress
+    "  {0,-16}: {1}" -f "Name",$_.Name
+    "  {0,-16}: DriverName          : {1}" -f "",$_.DriverName
+    "  {0,-16}: PortName            : {1}" -f "",$_.PortName
+    "  {0,-16}: PrinterHostAddress  : {1}" -f "",$printerHostAddress
+    ""
+}
 
 Write-Host "----------------------------------------------------------------------------------------------------"
 "Execution time: {0}" -f ((Get-Date)-$t_start).ToString() | Write-Host -ForegroundColor DarkGray
