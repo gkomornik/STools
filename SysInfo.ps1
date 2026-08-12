@@ -323,7 +323,14 @@ Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3}
         "  {0,-16}: FileSystem             : {1,-6}" -f $_.DeviceID,$_.FileSystem
     }
     #"  {0,-16}  Size                   : {1:N2} GB" -f "",($_.Size / 1GB)
-    if (($_.Size / 1TB) -ge 1) {"  {0,-16}  Size                   : {1:N2} TB" -f "",($_.Size / 1TB)} else {"  {0,-16}  Size                   : {1:N2} GB" -f "",($_.Size / 1GB)}
+    #if (($_.Size / 1TB) -ge 1) {"  {0,-16}  Size                   : {1:N2} TB" -f "",($_.Size / 1TB)} else {"  {0,-16}  Size                   : {1:N2} GB" -f "",($_.Size / 1GB)}
+    #"{0} TB" -f ([Math]::Truncate(((1TB - 1) / 1TB) * 100) / 100)
+    #"{0} {1} TB" -f "",([Math]::Truncate( ($_.Size / 1TB) * 100 ) / 100)
+    if (($_.Size / 1GB) -ge 1000) {
+        "  {0,-16}  Size                   : {1} TB" -f "",([Math]::Truncate( ($_.Size / 1TB) * 100 ) / 100)
+    } else {
+        "  {0,-16}  Size                   : {1:N2} GB" -f "",($_.Size / 1GB)
+    }
     "  {0,-16}  Free                   : {1:N2} GB ({2} %)" -f "",($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1)
 
     if ($sysDrive -eq "[SYSTEM DRIVE]") {
@@ -381,7 +388,15 @@ Write-Host "PHYSICAL DISK:" -ForegroundColor Cyan
 Get-PhysicalDisk | ForEach-Object {
     "  {0,-16}: {1}" -f $_.DeviceID,$_.Model
     #"  {0,-16}  Size                : {1:N2} GB" -f "",($_.Size / 1GB)
-    if (($_.Size / 1TB) -ge 1) {"  {0,-16}  Size                : {1:N2} TB" -f "",($_.Size / 1TB)} else {"  {0,-16}  Size                : {1:N2} GB" -f "",($_.Size / 1GB)}
+
+
+    #"{0} {1} TB" -f "",([Math]::Truncate( ($_.Size / 1TB) * 100 ) / 100)
+    #if (($_.Size / 1TB) -ge 1) {"  {0,-16}  Size                : {1:N2} TB" -f "",($_.Size / 1TB)} else {"  {0,-16}  Size                : {1:N2} GB" -f "",($_.Size / 1GB)}
+    if (($_.Size / 1GB) -ge 1000) {
+        "  {0,-16}  Size                : {1:N2} TB" -f "",([Math]::Truncate( ($_.Size / 1TB) * 100 ) / 100)
+    } else {
+        "  {0,-16}  Size                : {1:N2} GB" -f "",($_.Size / 1GB)
+    }
     "  {0,-16}  BusType             : {1}" -f "",$_.BusType
     "  {0,-16}  MediaType           : {1}" -f "",$_.MediaType
     "  {0,-16}  FirmwareVersion     : {1}" -f "",$_.FirmwareVersion
