@@ -492,7 +492,7 @@ Get-Printer | Where-Object DriverName -ne "Remote Desktop Easy Print" | ForEach-
     $printerHostAddress=(Get-PrinterPort | Where-Object {$_.Name -match $portName} | Select-Object PrinterHostAddress).PrinterHostAddress
     "  {0,-16}: {1}" -f "Name",$_.Name
     "  {0,-16}: DriverName          : {1}" -f "",$_.DriverName
-    "  {0,-16}: PortName            : {1}" -f "",$_.PortName
+    "  {0,-16}: PortName            : {1}" -f "",$_.PortName.SubString(0,20)
     "  {0,-16}: PrinterHostAddress  : {1}" -f "",$printerHostAddress
     ""
 }
