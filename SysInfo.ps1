@@ -485,21 +485,25 @@ Write-Host "NETWORK:" -ForegroundColor Cyan
 }
 
 # printer
-#Write-Host "PRINTERS:" -ForegroundColor Cyan
+# TO-DO: change to win32_printer
+Write-Host "PRINTERS:" -ForegroundColor Cyan
 
 #Get-Printer | Format-List @{Label="Name";Expression={$_.Name}},@{Label="DriverName";Expression={$_.DriverName}},@{Label="PortName";Expression={$_.PortName.SubString(0,10)}},@{Label="PrinterHostAddress";Expression={$portName=$_.PortName;(Get-PrinterPort | Where-Object {$_.Name -match $portName} | Select-Object PrinterHostAddress).PrinterHostAddress}}
 #Get-Printer | Where-Object DriverName -ne "Remote Desktop Easy Print" | Format-List @{Label="Name";Expression={$_.Name}},@{Label="DriverName";Expression={$_.DriverName}},@{Label="PortName";Expression={$_.PortName.SubString(0,10)}},@{Label="PrinterHostAddress";Expression={$portName=$_.PortName;(Get-PrinterPort | Where-Object {$_.Name -match $portName} | Select-Object PrinterHostAddress).PrinterHostAddress}}
-<#
+
 Get-Printer | Where-Object DriverName -ne "Remote Desktop Easy Print" | ForEach-Object {
     $portName=$_.PortName
     $printerHostAddress=(Get-PrinterPort | Where-Object {$_.Name -match $portName} | Select-Object PrinterHostAddress).PrinterHostAddress
     "  {0,-16}: {1}" -f "Name",$_.Name
-    "  {0,-16}: DriverName          : {1}" -f "",$_.DriverName
-    "  {0,-16}: PortName            : {1}" -f "",$_.PortName.SubString(0,20)
-    "  {0,-16}: PrinterHostAddress  : {1}" -f "",$printerHostAddress
+    "  {0,-16}  DriverName          : {1}" -f "",$_.DriverName
+    if ($_.PortName.Length -gt 20) {
+        "  {0,-16}  PortName            : {1}" -f "",$_.PortName.SubString(0,20)
+    } else {
+        "  {0,-16}  PortName            : {1}" -f "",$_.PortName
+    }
+    "  {0,-16}  PrinterHostAddress  : {1}" -f "",$printerHostAddress
     ""
 }
-#>
 
 Write-Host "----------------------------------------------------------------------------------------------------"
 "PSVersion: {0}, PSEdition: {1}, CLR: {2}" -f $PSVersionTable.PSVersion,$PSVersionTable.PSEdition,[System.Environment]::Version.ToString() | Write-Host -ForegroundColor DarkGray
