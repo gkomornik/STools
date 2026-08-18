@@ -502,6 +502,7 @@ Get-Printer | Where-Object DriverName -ne "Remote Desktop Easy Print" | ForEach-
 #>
 
 Write-Host "----------------------------------------------------------------------------------------------------"
+"PSVersion: {0}, PSEdition: {1}, CLR: {2}" -f $PSVersionTable.PSVersion,$PSVersionTable.PSEdition,[System.Environment]::Version.ToString() | Write-Host -ForegroundColor DarkGray
 "Execution time: {0}" -f ((Get-Date)-$t_start).ToString() | Write-Host -ForegroundColor DarkGray
 ""
 #"Error : {0}" -f $Error.Count | Write-Host -ForegroundColor DarkGray
