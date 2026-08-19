@@ -525,7 +525,7 @@ Get-CimInstance -ClassName Win32_Printer | Where-Object DriverName -ne "Remote D
     ""
 }
 
-Get-CimInstance -ClassName Win32_TCPIPPrinterPort
+#Get-CimInstance -ClassName Win32_TCPIPPrinterPort
 
 Write-Host "----------------------------------------------------------------------------------------------------"
 "PSVersion: {0}, PSEdition: {1}, CLR: {2}" -f $PSVersionTable.PSVersion,$PSVersionTable.PSEdition,[System.Environment]::Version.ToString() | Write-Host -ForegroundColor DarkGray
