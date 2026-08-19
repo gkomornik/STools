@@ -284,7 +284,7 @@ Get-CimInstance -ClassName Win32_PhysicalMemory | ForEach-Object {
     }
     "  {0,-16}  BankLabel           : {1}" -f "",$_.BankLabel
     "  {0,-16}  DeviceLocator       : {1}" -f "",$_.DeviceLocator
-    "  {0,-16}  HotSwappable        : {1}" -f "",$_.HotSwappable
+    #"  {0,-16}  HotSwappable        : {1}" -f "",$_.HotSwappable
     if (![string]::IsNullOrEmpty($_.Speed)) {
         "  {0,-16}  Speed               : {1} MHz" -f "",$_.Speed
     }
