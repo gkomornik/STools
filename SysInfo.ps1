@@ -333,7 +333,11 @@ Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3}
     } else {
         "  {0,-16}  Size                   : {1:N2} GB" -f "",($_.Size / 1GB)
     }
-    "  {0,-16}  Free                   : {1:N2} GB ({2} %)" -f "",($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1)
+    if ($_.Size -gt 0) {
+        "  {0,-16}  Free                   : {1:N2} GB ({2} %)" -f "",($_.FreeSpace / 1GB),[Math]::Round(  (($_.FreeSpace/$_.Size)*100) , 1)
+    } else {
+        "nie poprawne"
+    }
 
     if ($sysDrive -eq "[SYSTEM DRIVE]") {
         "  {0,-16}  SystemDrive            : {1}" -f "",$true
