@@ -486,11 +486,12 @@ Write-Host "NETWORK:" -ForegroundColor Cyan
 
 # printer
 # TO-DO: change to win32_printer
-Write-Host "PRINTERS:" -ForegroundColor Cyan
+#Write-Host "PRINTERS:" -ForegroundColor Cyan
 
 #Get-Printer | Format-List @{Label="Name";Expression={$_.Name}},@{Label="DriverName";Expression={$_.DriverName}},@{Label="PortName";Expression={$_.PortName.SubString(0,10)}},@{Label="PrinterHostAddress";Expression={$portName=$_.PortName;(Get-PrinterPort | Where-Object {$_.Name -match $portName} | Select-Object PrinterHostAddress).PrinterHostAddress}}
 #Get-Printer | Where-Object DriverName -ne "Remote Desktop Easy Print" | Format-List @{Label="Name";Expression={$_.Name}},@{Label="DriverName";Expression={$_.DriverName}},@{Label="PortName";Expression={$_.PortName.SubString(0,10)}},@{Label="PrinterHostAddress";Expression={$portName=$_.PortName;(Get-PrinterPort | Where-Object {$_.Name -match $portName} | Select-Object PrinterHostAddress).PrinterHostAddress}}
 
+<#
 Get-Printer | Where-Object DriverName -ne "Remote Desktop Easy Print" | ForEach-Object {
     $portName=$_.PortName
     $printerHostAddress=(Get-PrinterPort | Where-Object {$_.Name -match $portName} | Select-Object PrinterHostAddress).PrinterHostAddress
@@ -504,8 +505,9 @@ Get-Printer | Where-Object DriverName -ne "Remote Desktop Easy Print" | ForEach-
     "  {0,-16}  PrinterHostAddress  : {1}" -f "",$printerHostAddress
     ""
 }
+#>
 
-Write-Host "PRINTERS V2:" -ForegroundColor Cyan
+Write-Host "PRINTERS:" -ForegroundColor Cyan
 Get-CimInstance -ClassName Win32_Printer | Where-Object DriverName -ne "Remote Desktop Easy Print" | ForEach-Object {
     $portName=$_.PortName
     #Get-CimInstance -ClassName Win32_TCPIPPrinterPort
