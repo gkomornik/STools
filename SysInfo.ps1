@@ -357,8 +357,15 @@ Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3}
 
         #($bitLockerInfo.KeyProtector | Where-Object KeyProtectorType -eq "RecoveryPassword").KeyProtectorId
         #RecoveryPassword
-        "  {0,-16}    KeyProtectorId       : {1}" -f "",(($bitLockerInfo.KeyProtector | Where-Object KeyProtectorType -eq "RecoveryPassword").KeyProtectorId)
-        "  {0,-16}    RecoveryPassword     : {1}" -f "",(($bitLockerInfo.KeyProtector | Where-Object KeyProtectorType -eq "RecoveryPassword").RecoveryPassword)
+        $keyProtectorId = ($bitLockerInfo.KeyProtector | Where-Object KeyProtectorType -eq "RecoveryPassword").KeyProtectorId
+        $recoveryPassword = ($bitLockerInfo.KeyProtector | Where-Object KeyProtectorType -eq "RecoveryPassword").RecoveryPassword
+        #"  {0,-16}    KeyProtectorId       : {1}" -f "",(($bitLockerInfo.KeyProtector | Where-Object KeyProtectorType -eq "RecoveryPassword").KeyProtectorId)
+        if (![string]::IsNullOrEmpty($keyProtectorId)) {
+            "  {0,-16}    KeyProtectorId       : {1}" -f "",$keyProtectorId
+        }
+        if (![string]::IsNullOrEmpty($recoveryPassword)) {
+            "  {0,-16}    RecoveryPassword     : {1}" -f "",$recoveryPassword
+        }
     }
     ""
 }
