@@ -228,6 +228,47 @@ Get-CimInstance -ClassName Win32_DiskDrive | ForEach-Object {
 ""
 #>
 
+function GetMemType {
+    param (
+        [System.UInt32]$memType
+    )
+    $retVal="Undefined"
+
+    switch ($memType) {
+        0x0 {$retVal="Undefined"}
+        0x0 {$retVal = "Unknown"}
+        0x1 {$retVal = "Other"}
+        0x2 {$retVal = "DRAM"}
+        0x3 {$retVal = "Synchronous DRAM"}
+        0x4 {$retVal = "Cache DRAM"}
+        0x5 {$retVal = "EDO"}
+        0x6 {$retVal = "EDRAM"}
+        0x7 {$retVal = "VRAM"}
+        0x8 {$retVal = "SRAM"}
+        0x9 {$retVal = "RAM"}
+        0xa {$retVal = "ROM"}
+        0xb {$retVal = "Flash"}
+        0xc {$retVal = "EEPROM"}
+        0xd {$retVal = "FEPROM"}
+        0xe {$retVal = "EPROM"}
+        0xf {$retVal = "CDRAM"}
+        0x10 {$retVal = "3DRAM"}
+        0x11 {$retVal = "SDRAM"}
+        0x12 {$retVal = "SGRAM"}
+        0x13 {$retVal = "RDRAM"}
+        0x14 {$retVal = "DDR"}
+        0x15 {$retVal = "DDR2"}
+        0x16 {$retVal = "DDR2 FB-DIMM"}
+        0x17 {$retVal = "Undefined 23"}
+        0x18 {$retVal = "DDR3"}
+        0x19 {$retVal = "FBD2"}
+        0x1a {$retVal = "DDR4"}
+        0x22 {$retVal = "DDR5"}
+        Default { $retVal = 'none' }
+    }
+    return $retVal
+}
+
 # physical memory
 Write-Host "PHYSICAL MEMORY:" -ForegroundColor Cyan
 Get-CimInstance -ClassName Win32_PhysicalMemory | ForEach-Object {
@@ -236,7 +277,14 @@ Get-CimInstance -ClassName Win32_PhysicalMemory | ForEach-Object {
     "  {0,-16}  PartNumber          : {1}" -f "",$_.PartNumber
     "  {0,-16}  SerialNumber        : {1}" -f "",$_.SerialNumber
     "  {0,-16}  Capacity            : {1} GB" -f "",($_.Capacity / 1GB)
+    if ($_.MemoryType -ne 0) {
+        "  {0,-16}  Type                : {1}" -f "",(GetMemType($_.MemoryType))
+    } else {
+        "  {0,-16}  Type                : {1}" -f "",(GetMemType($_.SMBIOSMemoryType))
+    }
+    "  {0,-16}  BankLabel           : {1}" -f "",$_.BankLabel
     "  {0,-16}  DeviceLocator       : {1}" -f "",$_.DeviceLocator
+    "  {0,-16}  HotSwappable        : {1}" -f "",$_.HotSwappable
     if (![string]::IsNullOrEmpty($_.Speed)) {
         "  {0,-16}  Speed               : {1} MHz" -f "",$_.Speed
     }
