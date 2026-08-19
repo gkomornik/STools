@@ -505,6 +505,28 @@ Get-Printer | Where-Object DriverName -ne "Remote Desktop Easy Print" | ForEach-
     ""
 }
 
+Write-Host "PRINTERS V2:" -ForegroundColor Cyan
+Get-CimInstance -ClassName Win32_Printer | Where-Object DriverName -ne "Remote Desktop Easy Print" | ForEach-Object {
+    $portName=$_.PortName
+    #Get-CimInstance -ClassName Win32_TCPIPPrinterPort
+    $printerHostAddress=(Get-PrinterPort | Where-Object {$_.Name -match $portName} | Select-Object PrinterHostAddress).PrinterHostAddress
+    "  {0,-16}: {1}" -f "Name",$_.Name
+    "  {0,-16}  DriverName          : {1}" -f "",$_.DriverName
+    if ($_.PortName.Length -gt 20) {
+        "  {0,-16}  PortName            : {1}" -f "",$_.PortName.SubString(0,20)
+    } else {
+        "  {0,-16}  PortName            : {1}" -f "",$_.PortName
+    }
+    "  {0,-16}  PrinterHostAddress  : {1}" -f "",$printerHostAddress
+    #"  {0,-16}  CapabilityDescriptions  : {1}" -f "",($_.CapabilityDescriptions -join " ")
+    "  {0,-16}  Capability          : {1}" -f "",([String]::Join(" ",$_.CapabilityDescriptions))
+    "  {0,-16}  Default             : {1}" -f "",$_.Default
+
+    ""
+}
+
+Get-CimInstance -ClassName Win32_TCPIPPrinterPort
+
 Write-Host "----------------------------------------------------------------------------------------------------"
 "PSVersion: {0}, PSEdition: {1}, CLR: {2}" -f $PSVersionTable.PSVersion,$PSVersionTable.PSEdition,[System.Environment]::Version.ToString() | Write-Host -ForegroundColor DarkGray
 "Execution time: {0}" -f ((Get-Date)-$t_start).ToString() | Write-Host -ForegroundColor DarkGray
