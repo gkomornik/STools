@@ -356,6 +356,7 @@ Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3}
 
         "  {0,-16}    ProtectionStatus     : {1}" -f "",$bitLockerInfo.ProtectionStatus
         "  {0,-16}    VolumeStatus         : {1}" -f "",$bitLockerInfo.VolumeStatus
+        "  {0,-16}    LockedStatus         : {1}" -f "",$bitLockerInfo.LockedStatus
         "  {0,-16}    EncryptionPercentage : {1}" -f "",$bitLockerInfo.EncryptionPercentage
         "  {0,-16}    EncryptionMethod     : {1}" -f "",$bitLockerInfo.EncryptionMethod
 
