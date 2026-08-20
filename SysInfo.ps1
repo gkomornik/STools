@@ -214,7 +214,9 @@ $pageFile = Get-CimInstance Win32_PageFileUsage
 $pfTotal = if($pageFile) { ($pageFile | Measure-Object -Property AllocatedBaseSize -Sum).Sum } else { 0 }
 $pfUsed = if($pageFile) { ($pageFile | Measure-Object -Property CurrentUsage -Sum).Sum } else { 0 }
 $pfPeak= if($pageFile) { ($pageFile | Measure-Object -Property PeakUsage -Sum).Sum } else { 0 }
-"  {0,-16}: {1,5} MB used of {2,5} MB ({3} %) {4,5}: {5} MB" -f "Swap file",$pfUsed,$pfTotal,[Math]::Round(($pfUsed/$pfTotal)*100,1),"Peak",$pfPeak
+if ($pfTotal -ne 0) {
+    "  {0,-16}: {1,5} MB used of {2,5} MB ({3} %) {4,5}: {5} MB" -f "Swap file",$pfUsed,$pfTotal,[Math]::Round(($pfUsed/$pfTotal)*100,1),"Peak",$pfPeak
+}
 ""
 
 # disk drive
@@ -235,7 +237,7 @@ function GetMemType {
     $retVal="Undefined"
 
     switch ($memType) {
-        0x0 {$retVal="Undefined"}
+        0x0 {$retVal = "Undefined"}
         0x0 {$retVal = "Unknown"}
         0x1 {$retVal = "Other"}
         0x2 {$retVal = "DRAM"}
@@ -274,6 +276,9 @@ Write-Host "PHYSICAL MEMORY:" -ForegroundColor Cyan
 Get-CimInstance -ClassName Win32_PhysicalMemory | ForEach-Object {
     #"  {0,-16}: PartNumber          : {1}" -f $_.Manufacturer,$_.PartNumber
     "  {0,-16}: {1}" -f "Manufacturer",$_.Manufacturer
+    #"  {0,-16}: " -f "Manufacturer" | Write-Host -NoNewline
+    #"{0}" -f $_.Manufacturer | Write-Host -ForegroundColor DarkYellow
+
     "  {0,-16}  PartNumber          : {1}" -f "",$_.PartNumber
     "  {0,-16}  SerialNumber        : {1}" -f "",$_.SerialNumber
     "  {0,-16}  Capacity            : {1} GB" -f "",($_.Capacity / 1GB)
@@ -290,7 +295,7 @@ Get-CimInstance -ClassName Win32_PhysicalMemory | ForEach-Object {
     }
     ""
 }
-"  {0,-16}: {1} GB" -f "Total size",((get-CimInstance -ClassName win32_physicalmemory | Measure-Object -Property Capacity -Sum).Sum /1gb)
+"  {0,-16}: {1} GB" -f "Total size",((get-CimInstance -ClassName win32_physicalmemory | Measure-Object -Property Capacity -Sum).Sum / 1GB)
 ""
 
 #Format-Table @{Label="Disk Drive";Expression={$_.Caption}},@{Label="Size";Expression={$_.Size / 1gb}}
@@ -485,12 +490,14 @@ foreach ($ip in $ip_address) {
 }
 #>
 
+<#
 (Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4) | ForEach-Object {
     #$_
     #!$netAdapter=Get-NetAdapter -InterfaceIndex $_.InterfaceIndex
     #"  {0,-16}: {1,-18} MAC: {2,-20} LinkSpeed: {3,-20}`n  {4,-16}  ifDesc: {5,-16}" -f "IPv4",$_.IPAddress,$netAdapter.MacAddress,$netAdapter.LinkSpeed," ",$netAdapter.ifDesc #,$netAdapter.DriverDescription
     #!"  {0,-16}: {1,-18} MAC: {2,-20} LinkSpeed: {3,-20}`n  {4,-16}  {5,-16}" -f "IPv4",$_.IPAddress,$netAdapter.MacAddress,$netAdapter.LinkSpeed," ",$netAdapter.ifDesc #,$netAdapter.DriverDescription
 }
+#>
 
 #"IP Address`t`t: {0}" -f (Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4).IPAddress
 #"  {0,-20}: {1}" -f "IPV4",$ip_address
@@ -509,40 +516,53 @@ function Convert-PrefixToSubnetMask ($prefix) {
 
 # network
 Write-Host "NETWORK:" -ForegroundColor Cyan
-(Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4) | ForEach-Object {
-    #$_
-    $netAdapter = Get-NetAdapter -InterfaceIndex $_.InterfaceIndex
-    $netIPConfiguration = Get-NetIPConfiguration -InterfaceIndex $_.InterfaceIndex
-    $prefixLength = (Get-NetIPAddress -InterfaceIndex $_.InterfaceIndex -AddressFamily IPv4).PrefixLength
-
-    $ipv6=$null
-    try {
-        $ipv6 = (Get-NetIPAddress -InterfaceIndex $_.InterfaceIndex -AddressFamily IPv6 -ErrorAction Stop).IPAddress
-    }
-    catch {
-        <#Do this if a terminating exception happens#>
-    }
-    #"  {0,-16}: {1,-18} MAC: {2,-20} LinkSpeed: {3,-20}`n  {4,-16}  ifDesc: {5,-16}" -f "IPv4",$_.IPAddress,$netAdapter.MacAddress,$netAdapter.LinkSpeed," ",$netAdapter.ifDesc #,$netAdapter.DriverDescription
-    #"  {0,-16}: {1,-18} MAC: {2,-20} LinkSpeed: {3,-20}`n  {4,-16}  {5,-16}" -f "IPv4",$_.IPAddress,$netAdapter.MacAddress,$netAdapter.LinkSpeed," ",$netAdapter.ifDesc #,$netAdapter.DriverDescription
-    "  {0,-16}: {1}" -f $_.ifIndex,$netAdapter.ifDesc #,$netAdapter.DriverDescription
-    "  {0,-16}  IPv4                : {1}" -f "",$_.IPAddress
-    #"  {0,-16}  IPv6                : {1}" -f "",(Get-NetIPAddress -InterfaceIndex $_.InterfaceIndex -AddressFamily IPv6).IPAddress
-    if ($ipv6) {
-        #if ($ipv6.GetType().Fullname -eq [System.Object[]]) {
-        if ($ipv6 -is [Array]) {
-            $ipv6 | ForEach-Object {
-                "  {0,-16}  IPv6                : {1}" -f "",$_
-            }
-        } else {
-            "  {0,-16}  IPv6                : {1}" -f "",$ipv6
+if ($null -ne (Get-NetConnectionProfile)) {
+    (Get-NetIPAddress -InterfaceIndex (Get-NetConnectionProfile).InterfaceIndex | Where-Object AddressFamily -eq IPv4) | ForEach-Object {
+        #$_
+        $netAdapter = Get-NetAdapter -InterfaceIndex $_.InterfaceIndex
+        $netIPConfiguration = Get-NetIPConfiguration -InterfaceIndex $_.InterfaceIndex
+        $prefixLength = (Get-NetIPAddress -InterfaceIndex $_.InterfaceIndex -AddressFamily IPv4).PrefixLength
+        $ipv6=$null
+        $networkCategory = (Get-NetConnectionProfile -InterfaceIndex $_.InterfaceIndex).NetworkCategory
+        $domainAuthenticationKind = (Get-NetConnectionProfile -InterfaceIndex $_.InterfaceIndex).DomainAuthenticationKind
+        $interfaceAlias = (Get-NetConnectionProfile -InterfaceIndex $_.InterfaceIndex).InterfaceAlias
+    
+        try {
+            $ipv6 = (Get-NetIPAddress -InterfaceIndex $_.InterfaceIndex -AddressFamily IPv6 -ErrorAction Stop).IPAddress
         }
+        catch {
+            <#Do this if a terminating exception happens#>
+        }
+
+        #"  {0,-16}: {1,-18} MAC: {2,-20} LinkSpeed: {3,-20}`n  {4,-16}  ifDesc: {5,-16}" -f "IPv4",$_.IPAddress,$netAdapter.MacAddress,$netAdapter.LinkSpeed," ",$netAdapter.ifDesc #,$netAdapter.DriverDescription
+        #"  {0,-16}: {1,-18} MAC: {2,-20} LinkSpeed: {3,-20}`n  {4,-16}  {5,-16}" -f "IPv4",$_.IPAddress,$netAdapter.MacAddress,$netAdapter.LinkSpeed," ",$netAdapter.ifDesc #,$netAdapter.DriverDescription
+        "  {0,-16}: {1}" -f $_.ifIndex,$netAdapter.ifDesc #,$netAdapter.DriverDescription
+        "  {0,-16}  IPv4                : {1}" -f "",$_.IPAddress
+        #"  {0,-16}  IPv6                : {1}" -f "",(Get-NetIPAddress -InterfaceIndex $_.InterfaceIndex -AddressFamily IPv6).IPAddress
+    
+        if ($ipv6) {
+            #if ($ipv6.GetType().Fullname -eq [System.Object[]]) {
+            if ($ipv6 -is [Array]) {
+                $ipv6 | ForEach-Object {
+                    "  {0,-16}  IPv6                : {1}" -f "",$_
+                }
+            } else {
+                "  {0,-16}  IPv6                : {1}" -f "",$ipv6
+            }
+        }
+        "  {0,-16}  Prefix Length       : {1}" -f "",$prefixLength
+        "  {0,-16}  Subnet Mask         : {1}" -f "",(Convert-PrefixToSubnetMask -prefix $prefixLength)
+        "  {0,-16}  MAC                 : {1}" -f "",$netAdapter.MacAddress
+        "  {0,-16}  LinkSpeed           : {1}" -f "",$netAdapter.LinkSpeed
+        "  {0,-16}  NetworkCategory     : {1}" -f "",$networkCategory
+        "  {0,-16}  InterfaceAlias      : {1}" -f "",$interfaceAlias
+        "  {0,-16}  DomainAuth.Kind     : {1}" -f "",$domainAuthenticationKind
+        "  {0,-16}  Default Gateway     : {1}" -f "",(($netIPConfiguration).IPv4DefaultGateway).NextHop
+        ($netIPConfiguration).DNSServer | Where-Object {$_.AddressFamily -eq 2} | ForEach-Object {$_.ServerAddresses | ForEach-Object {"  {0,-16}  DNS Servers         : {1}" -f "",$_  }}
+        ""
     }
-    "  {0,-16}  Prefix Length       : {1}" -f "",$prefixLength
-    "  {0,-16}  Subnet Mask         : {1}" -f "",(Convert-PrefixToSubnetMask -prefix $prefixLength)
-    "  {0,-16}  MAC                 : {1}" -f "",$netAdapter.MacAddress
-    "  {0,-16}  LinkSpeed           : {1}" -f "",$netAdapter.LinkSpeed
-    "  {0,-16}  Default Gateway     : {1}" -f "",(($netIPConfiguration).IPv4DefaultGateway).NextHop
-    ($netIPConfiguration).DNSServer | Where-Object {$_.AddressFamily -eq 2} | ForEach-Object {$_.ServerAddresses | ForEach-Object {"  {0,-16}  DNS Servers         : {1}" -f "",$_  }}
+} else {
+    "  No internet/network connection"
     ""
 }
 
