@@ -526,6 +526,7 @@ if ($null -ne (Get-NetConnectionProfile)) {
         $networkCategory = (Get-NetConnectionProfile -InterfaceIndex $_.InterfaceIndex).NetworkCategory
         $domainAuthenticationKind = (Get-NetConnectionProfile -InterfaceIndex $_.InterfaceIndex).DomainAuthenticationKind
         $interfaceAlias = (Get-NetConnectionProfile -InterfaceIndex $_.InterfaceIndex).InterfaceAlias
+        $name = (Get-NetConnectionProfile -InterfaceIndex $_.InterfaceIndex).Name
     
         try {
             $ipv6 = (Get-NetIPAddress -InterfaceIndex $_.InterfaceIndex -AddressFamily IPv6 -ErrorAction Stop).IPAddress
@@ -556,6 +557,7 @@ if ($null -ne (Get-NetConnectionProfile)) {
         "  {0,-16}  LinkSpeed           : {1}" -f "",$netAdapter.LinkSpeed
         "  {0,-16}  NetworkCategory     : {1}" -f "",$networkCategory
         "  {0,-16}  InterfaceAlias      : {1}" -f "",$interfaceAlias
+        "  {0,-16}  Name                : {1}" -f "",$name
         "  {0,-16}  DomainAuth.Kind     : {1}" -f "",$domainAuthenticationKind
         "  {0,-16}  Default Gateway     : {1}" -f "",(($netIPConfiguration).IPv4DefaultGateway).NextHop
         ($netIPConfiguration).DNSServer | Where-Object {$_.AddressFamily -eq 2} | ForEach-Object {$_.ServerAddresses | ForEach-Object {"  {0,-16}  DNS Servers         : {1}" -f "",$_  }}
