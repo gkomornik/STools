@@ -40,6 +40,12 @@ if ((0 -ne $os.Description.Length)) {
 #"  {0,-16}: {1}" -f "MachineId",(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\SQMClient").MachineId.ToString().Replace('{','').Replace('}','')
 "  {0,-16}: {1}" -f "MachineId",(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\SQMClient").MachineId.ToString().Trim('{','}')
 "  {0,-16}: {1}" -f "Domain",$cs.Domain
+# to test
+$azureInfo = dsregcmd /status
+"  {0,-16}: {1}" -f "Azure Ad Joined",($null -ne ($azureInfo | Select-String "AzureAdJoined : YES"))
+"  {0,-16}: {1}" -f "Azure Ad Reg.",($null -ne ($azureInfo | Select-String "WorkplaceJoined : YES"))
+#isRegistered = ($status | Select-String "WorkplaceJoined : YES") -ne $null
+
 
 $chassisType = ""
 switch ((Get-CimInstance -ClassName Win32_SystemEnclosure).ChassisTypes) {
